@@ -20,7 +20,7 @@ void controlCallback(const cans_msgs::Control msg){
   f << msg.f;
 }
 int main(int argc, char** argv){
-	string robotName = argv[0];//Maybe get this from elsewhere, like a launch file?
+	node.getParam("RobotName", robotName);
   ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	ros::NodeHandle nh;
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);

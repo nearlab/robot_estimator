@@ -39,7 +39,7 @@ void imuCallback(const cans_msgs::Imu msg){
 }
 
 int main(int argc, char** argv){
-  robotName = argv[0];
+  node.getParam("RobotName", robotName);
 	ros::init(argc,argv,strcat(robotName,"/estimator"));
 	ros::NodeHandle nh;
 	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,stateCallback);
