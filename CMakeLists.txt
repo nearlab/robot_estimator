@@ -9,13 +9,13 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   roscpp
+  xsens_node
 )
 
 find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_message_files(DIRECTORY msg FILES
   Control.msg
-  Imu.msg
   Markers.msg
   State.msg
   StateCov.msg
@@ -59,9 +59,3 @@ foreach(EXEC_FILE ${EXEC_LIST})
   install(TARGETS ${EXEC_FILE}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endforeach(EXEC_FILE ${EXEC_LIST})
-
-
-
-
-
-                             
