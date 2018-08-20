@@ -1,2 +1,2 @@
-float64[15] markers;
-double tStamp;
+float64[15] markers
+float64 tStamp

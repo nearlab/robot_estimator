@@ -1,23 +1,17 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0)
 project(robot_controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
 find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
   geometry_msgs
   message_generation
   std_msgs
   roscpp
 )
 
-find_package(Eigen REQUIRED)
-
-catkin_packages(
-  INCLUDE_DIRS include
-  DEPENDS Eigen
-)
+find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_message_files(DIRECTORY msg FILES
   Control.msg
@@ -32,12 +26,18 @@ generate_messages( DEPENDENCIES
   geometry_msgs
 )
 
+catkin_package(CATKIN_DEPENDS
+  std_msgs
+  geometry_msgs
+  roscpp
+  message_runtime
+)
+
 #########
 # BUILD #
 #########
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
 )
 
 add_executable(dynamics_node
@@ -54,9 +54,9 @@ add_executable(estimator_node
 #Should probably make a list for these and just loop over it
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
 foreach(EXEC_FILE ${EXEC_LIST})
-  target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES})
+  target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES} Eigen3::Eigen)
   add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS})
-  install(TARGETS dynamics_node
+  install(TARGETS ${EXEC_FILE}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endforeach(EXEC_FILE ${EXEC_LIST})
 

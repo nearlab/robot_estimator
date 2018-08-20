@@ -6,8 +6,8 @@
 #include <vicon_bridge/Marker.h>
 #include <Eigen/Dense> 
 
-#include "cans_msgs/State.h"
-#include "cans_msgs/Imu.h"
+#include "robot_controller/State.h"
+#include "robot_controller/Imu.h"
 #include "estimator.h"
 #include "estimateStateFromMarkers.h"
 
@@ -27,14 +27,14 @@ ros::Subscriber subMarkers, subImu;
 
 ros::Time tsMarkers, tsImu;
 
-void markersCallback(const cans_msgs::Markers msg){
+void markersCallback(const robot_controller::Markers msg){
   tsMarkers = msg.tStamp;
   for(int i=0;i<15;i++){
     zMarkers(i) = msg.markers[i];
   }
 }   
 
-void imuCallback(const cans_msgs::Imu msg){
+void imuCallback(const robot_controller::Imu msg){
     zImu << msg.acc << msg.gyr;
 }
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv){
 	ros::NodeHandle nh;
 	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,stateCallback);
   subMarkers = nh.subscribe(strcat(robotName,"/markers"),1000,markersCallback);
-  pub = nh.advertise<cans_msgs::State>(strcat(robotName,"/state"),1000);
+  pub = nh.advertise<robot_controller::State>(strcat(robotName,"/state"),1000);
   ros::Rate loop_rate(100);
   ros::Time tsImuOld,tsMarkersOld;
   bool first = true;
@@ -65,7 +65,7 @@ int main(int argc, char** argv){
     }
     tsImuOld = ros::Time.fromNSec(tsImu.toNSec());
     tsMarkersOld = ros::Time.fromNSec(tsMarkers.toNSec());
-    cans_msgs::State toPub;
+    robot_controller::State toPub;
     state = estimator.getState();
     for(int i=0;i<3;i++){//There are better ways
       toPub.r(i) = state(i);

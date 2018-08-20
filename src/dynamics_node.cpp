@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include <Eigen/Dense> 
 #include <geometry_msgs/Vector3.h>
-#include "cans_msgs/State.h"
-#include "cans_msgs/Control.h"
+#include "robot_controller/State.h"
+#include "robot_controller/Control.h"
 #include <math.h> 
 #include <string.h>
 
@@ -11,12 +11,12 @@ Eigen::Vector4d q;//Unused as of yet
 double n = 2*pi/T; //TODO: Get Torb from a launch file somehow. Scoping is hard. Globals, perhaps.
 ros::Publisher pub;
 ros::Subscriber subState, subControl;
-void stateCallback(const cans_msgs::State msg){
+void stateCallback(const robot_controller::State msg){
   r << msg.r;
   q << msg.q;
   v << msg.v;
 }
-void controlCallback(const cans_msgs::Control msg){
+void controlCallback(const robot_controller::Control msg){
   f << msg.f;
 }
 int main(int argc, char** argv){

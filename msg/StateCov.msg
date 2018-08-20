@@ -1,3 +1,3 @@
 float64[12] P #Covariances along the diagonal.
-double tStamp;
+float64 tStamp
 #Broke this up from state
