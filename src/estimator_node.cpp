@@ -48,6 +48,7 @@ int main(int argc, char** argv){
   ros::Rate loop_rate(100);
   ros::Time tsImuOld,tsMarkersOld;
   bool first = true;
+
   while(ros::ok()){
     if(first){
       //Do things

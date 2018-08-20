@@ -26,6 +26,7 @@ int main(int argc, char** argv){
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   subControl=nh.subscribe(strcat(robotName,"/control"),1000,controlCallback);
   pub=nh.advertise<geometry_msgs::Vector3>(strcat(robotName,"/sc_accel"),1000);
+  
   ros::Rate loop_rate(100);
   while(ros::ok()){
     a(0) = 3*n*n*r(0)+2*v(1)*n+f(0)/mass;

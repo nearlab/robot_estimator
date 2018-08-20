@@ -2,8 +2,8 @@
 #include <ros/ros.h>
 #include <Eigen/Dense> 
 #include <geometry_msgs/Vector3.h>
-#include "cans_msgs/State.h"
-#include "cans_msgs/Control.h"
+#include "robot_controller/State.h"
+#include "robot_controller/Control.h"
 #include <math.h> 
 #include <string.h>
 
@@ -17,7 +17,7 @@ K << 4.4814, -.2019, 0, 42.5742, .0015, 0,
 double n = 2*pi/T; //TODO: Get Torb from a launch file somehow. Scoping is hard. Globals, perhaps.
 ros::Publisher pub;
 ros::Subscriber subState;
-void stateCallback(const cans_msgs::State msg){
+void stateCallback(const robot_controller::State msg){
   r << msg.r;
   q << msg.q;
   v << msg.v;
@@ -27,7 +27,7 @@ int main(int argc, char** argv){
   ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	ros::NodeHandle nh;
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
-  pub=nh.advertise<cans_msgs::Control>(strcat(robotName,"/control"),1000);
+  pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
   ros::Rate loop_rate(100);
   while(ros::ok()){
     
@@ -47,7 +47,7 @@ int main(int argc, char** argv){
 
     f = K * rvErr;
 
-    cans_msgs::Control toPub;
+    robot_controller::Control toPub;
     for(i=0;i<3;i++){
       toPub.f[i] = f(i);
     }

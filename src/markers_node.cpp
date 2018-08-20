@@ -4,7 +4,7 @@
 #include <Eigen/Dense> 
 #include <vicon_bridge/Markers.h>
 #include <vicon_bridge/Marker.h>
-#include "cans_msgs/Markers.h"
+#include "robot_controller/Markers.h"
 #include <math.h> 
 #include <string.h>
 
@@ -44,10 +44,10 @@ int main(int argc, char** argv){
   ros::init(argc,argv,"markers");
 	ros::NodeHandle nh;
 	subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
-  pub=nh.advertise<cans_msgs::Markers>(strcat(robotName,"/markers"),1000);
+  pub=nh.advertise<robot_controller::Markers>(strcat(robotName,"/markers"),1000);
   ros::Rate loop_rate(100);
   while(ros::ok()){
-    cans_msgs::Markers toPub;
+    robot_controller::Markers toPub;
     toPub.markers = zMarkers;
     toPub.tStamp = tsMarkers;
     pub.publish(toPub);
