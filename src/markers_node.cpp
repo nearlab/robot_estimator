@@ -40,9 +40,10 @@ void markersCallback(const vicon_bridge::Markers msg){
   //editing = false;
 }
 int main(int argc, char** argv){
-	string robotName = argv[0];//Maybe get this from elsewhere, like a launch file?
-  ros::init(argc,argv,"markers");
+	string robotName;
 	ros::NodeHandle nh;
+	nh.getParam("RobotName", robotName);
+  ros::init(argc,argv,"markers");
 	subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
   pub=nh.advertise<robot_controller::Markers>(strcat(robotName,"/markers"),1000);
   ros::Rate loop_rate(100);

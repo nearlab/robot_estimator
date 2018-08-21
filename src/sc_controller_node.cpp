@@ -23,9 +23,10 @@ void stateCallback(const robot_controller::State msg){
   v << msg.v;
 }
 int main(int argc, char** argv){
-	string robotName = argv[0];//Maybe get this from elsewhere, like a launch file?
-  ros::init(argc,argv,strcat(robotName,"/dynamics"));
+	string robotName;
 	ros::NodeHandle nh;
+	nh.getParam("RobotName", robotName);
+  ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
   ros::Rate loop_rate(100);

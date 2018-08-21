@@ -20,9 +20,11 @@ void controlCallback(const robot_controller::Control msg){
   f << msg.f;
 }
 int main(int argc, char** argv){
-	node.getParam("RobotName", robotName);
+  string robotName;
+  ros::NodeHandle nh;
+	nh.getParam("RobotName", robotName);
   ros::init(argc,argv,strcat(robotName,"/dynamics"));
-	ros::NodeHandle nh;
+	
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   subControl=nh.subscribe(strcat(robotName,"/control"),1000,controlCallback);
   pub=nh.advertise<geometry_msgs::Vector3>(strcat(robotName,"/sc_accel"),1000);
