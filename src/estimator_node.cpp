@@ -28,7 +28,7 @@ ros::Subscriber subMarkers, subImu;
 ros::Time tsMarkers, tsImu;
 
 void markersCallback(const robot_controller::Markers msg){
-  tsMarkers = msg.tStamp;
+  tsMarkers = ros::Time(msg.tStamp);
   for(int i=0;i<15;i++){
     zMarkers(i) = msg.markers[i];
   }
@@ -67,8 +67,8 @@ int main(int argc, char** argv){
       estimator.correct(zMarkers,dtMarkers);
       // operating = false;
     }
-    tsImuOld = ros::Time::fromNSec(tsImu.toNSec());
-    tsMarkersOld = ros::Time::fromNSec(tsMarkers.toNSec());
+    tsImuOld = ros::Time().fromNSec(tsImu.toNSec());
+    tsMarkersOld = ros::Time().fromNSec(tsMarkers.toNSec());
     robot_controller::State toPub;
     state = estimator.getState();
     for(int i=0;i<3;i++){//There are better ways
@@ -78,6 +78,8 @@ int main(int argc, char** argv){
       toPub.ba[i] = state(i+10);
     }
     toPub.q[3] = state(6);
+    ros::Time tsNow = ros::Time::now();
+    toPub.tStamp = tsNow.toSec();
     pub.publish(toPub);
     ros::spinOnce();
     loop_rate.sleep();

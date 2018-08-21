@@ -3,7 +3,7 @@
 Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& params, const std::vector<int> occluded){
   int nOccl = 0;
   int n = params.markerLocs.col(0).size();
-  Eigen::Matrix3d T = quat2rot(state.block(3,4));
+  Eigen::Matrix3d T = quat2rot(state.segment(3,4));
   Eigen::VectorXd zRaw(n);
   int ind = 0;
   for(int i=0;i<n;i++){
@@ -15,7 +15,7 @@ Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& para
     }
   }
   if(nOccl == n){
-    return NULL;
+    return Eigen::VectorXd();
   }else if(nOccl == 0){
     return zRaw;
   }

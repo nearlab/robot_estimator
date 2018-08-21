@@ -15,7 +15,7 @@ ros::Publisher pub;
 ros::Subscriber subMarkers;
 boost::array<double, 15> zMarkers;
 std::string robotNameStr;
-double tsMarkers;
+ros::Time tsMarkers;
 
 
 void markersCallback(const vicon_bridge::Markers msg){
@@ -54,7 +54,7 @@ int main(int argc, char** argv){
   while(ros::ok()){
     robot_controller::Markers toPub;
     toPub.markers = zMarkers;
-    toPub.tStamp = tsMarkers;
+    toPub.tStamp = tsMarkers.toSec();
     pub.publish(toPub);
     
     ros::spinOnce();
