@@ -3,7 +3,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/SVD>
-#include <boost/array.h>
+#include <boost/array.hpp>
 #include <math.h>
 #include "params.h"
 #include "simulator.h"

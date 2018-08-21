@@ -54,7 +54,7 @@ add_executable(estimator_node
                src/quatMath.cpp
                src/params.cpp
                src/estimator_node.cpp)
-#Should probably make a list for these and just loop over it
+
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
 foreach(EXEC_FILE ${EXEC_LIST})
   target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES} Eigen3::Eigen)
