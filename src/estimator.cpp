@@ -8,6 +8,7 @@ Estimator::Estimator(){
 }
 void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   Eigen::VectorXd r(3),v(3),q(4),ba(3);
+  double dt = dtImu;
   r = state.segment(0,3);
   v = state.segment(7,3);
   q = state.segment(3,4);
