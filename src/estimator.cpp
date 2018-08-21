@@ -82,10 +82,10 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
 }
 Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   //Returns the Jacobian for the measurement equation for the Vicon Markers
-  double n = size(zMarkersRaw);
-  double[5] occluded;
-  nOccl = 0;
-  for(i=0;i<n*3;i++){
+  double n = zMarkersRaw.size();
+  boost::array<int,5> occluded;
+  int nOccl = 0;
+  for(int i=0;i<n*3;i++){
     if(isnan(zMarkersRaw(i))){
       int ind = ceil(i/3)
       if(occluded[ind]==0){
@@ -95,12 +95,12 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
     }
   }
   if(3*(n-nOccl)==0){
-    return NULL;
+    return Eigen::MatrixXd();
   }
   Eigen::VectorXd zMarkers(3*(n-nOccl));
   if(nOccl>0){
-    indTemp = 1;
-    for(i=0;i<n;i++){
+    int indTemp = 1;
+    for(int i=0;i<n;i++){
       if(occluded[i]==0){
         zMarkers.block(indTemp,3) = zMarkersRaw.block(i,3);
         indTemp+=3;
@@ -112,6 +112,8 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   double qx = this->state(4);
   double qy = this->state(5);
   double qz = this->state(6);
+  double qw = this->state(7);
+  Eigen::Matrix3d dzdqx,dzdqy,dzdqz;
   dzdqx <<  0    , 2*qy , 2*qz ,
             2*qy , -4*qx, -2*qw,
             2*qz , 2*qw , -4*qx;
@@ -142,7 +144,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
   double sf = 2;
   double lambda = 1;
   bool firstRun = true;
-  cost = (zMarker - markerSimulator(x,this->params)).norm();
+  double cost = (zMarkers - markerSimulator(x,this->params)).norm();
   while(dx.norm()>.00001 && count<1000){
     double qx = x(4);
     double qy = x(5);
@@ -166,9 +168,9 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
              -2*qy, 2*qx , 4*qw ;
 
     Eigen::MatrixXd H(2*nMarkers,7); //Jacobian of measurement equation
-    rMarker = this->params.markerLocs;
-    for(i=0;i<nMarkers;i++){
-      H.block(i,0,3,3) = MatrixXd::Identity(3,3);
+    Eigen::MatrixXd rMarker = this->params.markerLocs;
+    for(int i=0;i<nMarkers;i++){
+      H.block(i,0,3,3) = Eigen::MatrixXd::Identity(3,3);
       H.block(i,3,3,1) = dzdqx*(rMarker.row(i).transpose());
       H.block(i,4,3,1) = dzdqy*(rMarker.row(i).transpose());
       H.block(i,5,3,1) = dzdqz*(rMarker.row(i).transpose());
@@ -178,13 +180,13 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     //Determine "optimal" scaling factor. The essence of Levenberg-Marquard
     //Lower scaling factor means larger step size
     while(firstRun){
-      Eigen::VectorXd dJdx1 = (Ht*H+lambda*(Ht*H).diagonal().asDiagonal()).inverse()*Ht*cost;
-      Eigen::VectorXd = x + dJdx1;
+      Eigen::VectorXd dJdx1 = (Ht*H+lambda*(Ht*H).diagonal().asDiagonal().toDenseMatrix()).inverse()*Ht*cost;
+      Eigen::VectorXd x1 = x + dJdx1;
       x1.tail(4) = x1.tail(4)/x1.tail(4).norm();
       double cost1 = (zMarkers - markerSimulator(x1,this->params)).norm();
 
-      Eigen::VectorXd dJdx2 = (Ht*H+lambda/sf*(Ht*H).diagonal().asDiagonal()).inverse()*Ht*cost;
-      Eigen::VectorXd = x + dJdx2;
+      Eigen::VectorXd dJdx2 = (Ht*H+lambda/sf*(Ht*H).diagonal().asDiagonal().toDenseMatrix()).inverse()*Ht*cost;
+      Eigen::VectorXd x2 = x + dJdx2;
       x2.tail(4) = x2.tail(4)/x1.tail(4).norm();
       double cost2 = (zMarkers - markerSimulator(x2,this->params)).norm();
 
@@ -196,14 +198,14 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
       }else{
         lambda = lambda*sf*sf; //Square it to be more efficient with checking, since we're just dividing next time anyway
       }
-      JacobiSVD<MatrixXd> svd(A);
+      JacobiSVD<Eigen::MatrixXd> svd(A);
       double rcond = svd.singularValues()(0)/svd.singularValues()(svd.singularValues().size()-1);
       if(rcond<1e-15){// If there isn't a step size small enough that offers any improvements, return.
         return;
       }
     }
-    Eigen::VectorXd dJdx = (Ht*H+lambda*(Ht*H).diagonal().asDiagonal()).inverse()*Ht*(zMarkers - markerSimulator(x,this->params);
-    Eigen::VectorXd = x + dJdx;
+    Eigen::VectorXd dJdx = (Ht*H+lambda*(Ht*H).diagonal().asDiagonal().toDenseMatrix()).inverse()*Ht*(zMarkers - markerSimulator(x,this->params));
+    x = x + dJdx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
   }

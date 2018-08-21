@@ -18,7 +18,7 @@ void stateCallback(const robot_controller::State msg){
   v << msg.v[0],msg.v[1],msg.v[2];
 }
 void controlCallback(const robot_controller::Control msg){
-  f << msg.f[0],msg.f[1],msg.f[2];
+  f << msg.f[0],msg.f[1],msg.f[2];d
 }
 int main(int argc, char** argv){
   std::string robotNameStr;
@@ -27,7 +27,7 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotNameStr);
   nh.getParam("Torb", Torb);
   nh.getParam("mass", mass);
-  double n = 2*pi/Torb; //Mean motion  
+  double n = 2*pi/Torb; //Mean motio  n  
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
   ros::init(argc,argv,strcat(robotName,"/dynamics"));

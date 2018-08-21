@@ -2,6 +2,8 @@
 #define ESTIMATOR_H
 
 #include <Eigen/Dense>
+#include <Eigen/SVD>
+#include <boost/array.h>
 #include <math.h>
 #include "params.h"
 #include "simulator.h"
