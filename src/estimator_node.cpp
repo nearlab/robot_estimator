@@ -7,6 +7,7 @@
 #include <Eigen/Dense> 
 
 #include "robot_controller/State.h"
+#include "robot_controller/Markers.h"
 #include "xsens_bridge/Imu.h"
 #include "estimator.h"
 
@@ -18,7 +19,6 @@ Eigen::VectorXd zMarkers(15), zImu(7), state(12);
 Eigen::MatrixXd P(12,12);
 Estimator estimator();
 
-string robotName;
 // bool editing,operating;
 // ros::Rate waitRate(10000);
 
@@ -34,7 +34,7 @@ void markersCallback(const robot_controller::Markers msg){
   }
 }   
 
-void imuCallback(const xsens_node::Imu msg){
+void imuCallback(const xsens_bridge::Imu msg){
     zImu << msg.acc[0],msg.acc[1],msg.acc[2] << msg.gyr[0],msg.gyr[1],msg.gyr[2];
 }
 
@@ -55,7 +55,7 @@ int main(int argc, char** argv){
   while(ros::ok()){
     if(first){
       //Do things
-      estimator.estimateStateFromMarkers(state,zMarkers,params);
+      estimator.estimateStateFromMarkers(zMarkers);
     }else{
       double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSecs();
       double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSecs();
@@ -72,10 +72,10 @@ int main(int argc, char** argv){
     robot_controller::State toPub;
     state = estimator.getState();
     for(int i=0;i<3;i++){//There are better ways
-      toPub.r(i) = state(i);
-      toPub.q(i) = state(i+3);
-      toPub.v(i) = state(i+7);
-      toPub.ba(i) = state(i+10);
+      toPub.r[i] = state(i);
+      toPub.q[i] = state(i+3);
+      toPub.v[i] = state(i+7);
+      toPub.ba[i] = state(i+10);
     }
     toPub.q(3) = state(6);
     pub.publish(toPub);

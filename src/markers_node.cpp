@@ -8,29 +8,30 @@
 #include <math.h> 
 #include <string>
 #include <cstring>
+#include <vector>
 
 ros::Publisher pub;
 ros::Subscriber subMarkers;
-double zMarkers[15];
-
+std::vector<double> zMarkers;
+std::string robotNameStr;
 ros::Time tsMarkers;
 
 
 void markersCallback(const vicon_bridge::Markers msg){
   tsMarkers = msg.header.stamp;
-  vicon_bridge::Marker markers[] = msg.markers;
-  int s = sizeof(markers);
+  std::vector<vicon_bridge::Marker> markers = msg.markers;
+  int s = markers.size();
   int zIter = 0;
   // while(operating){
   //   waitRate.sleep();
   // }
   // editing = true;
   for(int i=0;i<s;i++){
-    if(markers[i].compare(robotName)){
+    if(markers[i].subject_name.compare(robotName)){
       if(!markers[i].occluded){
-        zMarkers[zIter++] = markers[i].x;
-        zMarkers[zIter++] = markers[i].y;
-        zMarkers[zIter++] = markers[i].z;
+        zMarkers[zIter++] = markers[i].translation.x;
+        zMarkers[zIter++] = markers[i].translation.y;
+        zMarkers[zIter++] = markers[i].translation.z;
       }else{
         zMarkers[zIter++] = std::numeric_limits<double>::quiet_NaN();
         zMarkers[zIter++] = std::numeric_limits<double>::quiet_NaN();
@@ -41,7 +42,7 @@ void markersCallback(const vicon_bridge::Markers msg){
   //editing = false;
 }
 int main(int argc, char** argv){
-	std::string robotNameStr;
+  zMarkers = std::vector<double>(15);
   ros::NodeHandle nh;
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
@@ -53,7 +54,7 @@ int main(int argc, char** argv){
   while(ros::ok()){
     robot_controller::Markers toPub;
     toPub.markers = zMarkers;
-    toPub.tStamp = tsMarkers;
+    toPub.tStamp = tsMarkers.toSec();
     pub.publish(toPub);
     
     ros::spinOnce();

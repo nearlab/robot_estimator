@@ -15,7 +15,8 @@ public:
   Eigen::MatrixXd parseMeasMarkers(const Eigen::VectorXd& zMarkers);
   void estimateStateFromMarkers(const Eigen::VectorXd& zMarkers);
   Eigen::VectorXd getState();
-  Eigen::MatrixXd getCovariance()
+  Eigen::MatrixXd getCovariance();
+  Params getParams();
   bool initialized();
 
 private:

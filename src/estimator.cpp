@@ -213,6 +213,9 @@ Eigen::VectorXd Estimator::getState(){
 Eigen::MatrixXd Estimator::getCovariance(){
   return this->P;
 }
+Params Estimator::getParams(){
+  return this->params;
+}
 bool Estimator::initialized(){
   return this->isInitialized;
 }

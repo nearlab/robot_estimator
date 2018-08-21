@@ -1,6 +1,6 @@
 #include "simulator.h"
 
-Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& params, const int* occluded){
+Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& params, const std::vector<int> occluded){
   int nOccl = 0;
   int n = params.markerLocs.col(0).size();
   Eigen::Matrix3d T = quat2rot(state.block(3,4));
