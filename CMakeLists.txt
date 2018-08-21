@@ -31,6 +31,7 @@ catkin_package(CATKIN_DEPENDS
   geometry_msgs
   roscpp
   message_runtime
+  xsens_bridge
 )
 
 #########
@@ -48,10 +49,11 @@ add_executable(sc_controller_node
 add_executable(markers_node
                src/markers_node.cpp)
 add_executable(estimator_node
-               src/estimator_node.cpp
+               src/estimator.cpp
                src/simulator.cpp
                src/quatMath.cpp
-               src/params.cpp)
+               src/params.cpp
+               src/estimator_node.cpp)
 #Should probably make a list for these and just loop over it
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
 foreach(EXEC_FILE ${EXEC_LIST})

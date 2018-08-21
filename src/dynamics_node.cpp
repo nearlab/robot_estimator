@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 #include <Eigen/Dense> 
 #include <geometry_msgs/Vector3.h>
-#include "robot_controller/State.h"
 #include "robot_controller/Control.h"
+#include "robot_controller/State.h"
 #include <math.h> 
 #include <string>
 #include <cstring>
