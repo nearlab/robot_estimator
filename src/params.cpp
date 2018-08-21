@@ -3,6 +3,9 @@
 
 Params::Params(){
   double sa,sg,sigmaa0,sigmaag0,sigmaa,taua,smarker,imuDelt;
+  RMarkers = Eigen::MatrixXd(15,15);
+  Q = Eigen::MatrixXd(9,9);
+  markerLocs = Eigen::MatrixXd(5,3);
   imuDelt = .01;
   //Accelerometer white noise
   sa = pow((.08/sqrt(imuDelt)),2);

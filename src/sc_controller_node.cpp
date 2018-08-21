@@ -6,6 +6,7 @@
 #include "robot_controller/Control.h"
 #include <math.h> 
 #include <string>
+#include <cstring>
 
 Eigen::Vector3d r,v,a,f;
 Eigen::Vector4d q;//Unused as of yet

@@ -7,18 +7,19 @@
 #include "robot_controller/Markers.h"
 #include <math.h> 
 #include <string>
+#include <cstring>
 
 ros::Publisher pub;
 ros::Subscriber subMarkers;
-double[15] zMarkers;
+double zMarkers[15];
 
 ros::Time tsMarkers;
 
 
 void markersCallback(const vicon_bridge::Markers msg){
   tsMarkers = msg.header.stamp;
-  vicon_bridge::Markers markers = msg.markers;
-  int s = markers.size();
+  vicon_bridge::Marker markers[] = msg.markers;
+  int s = sizeof(markers);
   int zIter = 0;
   // while(operating){
   //   waitRate.sleep();

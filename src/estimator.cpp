@@ -3,6 +3,8 @@
 Estimator::Estimator(){
   this->params = Params();
   this->isInitialized = false;
+  this->state = Eigen::VectorXd(13);
+  this->P = Eigen::MatrixXd(12,12);
 }
 void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   Eigen::VectorXd r(3),v(3),q(4),ba(3);

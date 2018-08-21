@@ -19,8 +19,8 @@ public:
   bool initialized();
 
 private:
-  Eigen::VectorXd state(13);  
-  Eigen::MatrixXd P(12,12);
+  Eigen::VectorXd state;  
+  Eigen::MatrixXd P;
   bool isInitialized;
   Params params;
 };

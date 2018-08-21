@@ -11,6 +11,7 @@
 #include "estimator.h"
 
 #include <string>
+#include <cstring>
 #include <array>
 
 Eigen::VectorXd zMarkers(15), zImu(7), state(12);
