@@ -16,7 +16,7 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   Eigen::Matrix3d Tt = T.transpose();
   Eigen::Vector3d wk = zImu.tail(3);
   Eigen::VectorXd dq(4);
-  dq.head(3) = wk;
+  dq.head(3) = dt*wk/2;
   dq.tail(1) = sqrt(1-pow((dt*wk/2).norm(),2));
   Eigen::Vector3d ak = zImu.head(3) - ba - T*(ColVectorXd(3) << 0,0,9.8).finished();
   Eigen::Matrix3d wkx,akx;
@@ -39,7 +39,9 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
 
   //Update error covariance
   Eigen::Matrix3d wxax = crossProductEquivalent(wkx*ak);
-  Eigen::MatrixXd F(12,12),M(12,9);
+  Eigen::MatrixXd F,M;
+  F = Eigen::MatrixXd(12,12);
+  M = Eigen::MatrixXd(12,9);
   Eigen::Matrix3d z3 = Eigen::MatrixXd::Zero(3,3);
   Eigen::Matrix3d i3 = Eigen::MatrixXd::Identity(3,3);
   F << i3, pow(dt,3)/6*Tt*wxax-pow(dt,2)/2*Tt*akx, dt*i3, pow(dt,3)/6*Tt*wkx-pow(dt,2)/2*Tt, 

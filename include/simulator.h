@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include "quatMath.h"
 #include <vector>
+#include "params.h"
 
 Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& params, const std::vector<int> occluded = {0,0,0,0,0});
 Eigen::VectorXd imuSimulator(const Eigen::VectorXd& state, const double& dtImu, const Params& params);

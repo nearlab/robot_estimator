@@ -15,9 +15,9 @@
 #include <cstring>
 #include <array>
 
-Eigen::VectorXd zMarkers(15), zImu(7), state(12);
+Eigen::VectorXd zMarkers(15), zImu(6), state(12);
 Eigen::MatrixXd P(12,12);
-Estimator estimator();
+Estimator estimator;
 
 // bool editing,operating;
 // ros::Rate waitRate(10000);
@@ -35,7 +35,7 @@ void markersCallback(const robot_controller::Markers msg){
 }   
 
 void imuCallback(const xsens_bridge::Imu msg){
-    zImu << msg.acc[0],msg.acc[1],msg.acc[2] << msg.gyr[0],msg.gyr[1],msg.gyr[2];
+    zImu << msg.acc[0],msg.acc[1],msg.acc[2],msg.gyr[0],msg.gyr[1],msg.gyr[2];
 }
 
 int main(int argc, char** argv){
@@ -45,7 +45,7 @@ int main(int argc, char** argv){
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
 	ros::init(argc,argv,strcat(robotName,"/estimator"));
-	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,stateCallback);
+	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,imuCallback);
   subMarkers = nh.subscribe(strcat(robotName,"/markers"),1000,markersCallback);
   pub = nh.advertise<robot_controller::State>(strcat(robotName,"/state"),1000);
   ros::Rate loop_rate(100);
@@ -57,8 +57,8 @@ int main(int argc, char** argv){
       //Do things
       estimator.estimateStateFromMarkers(zMarkers);
     }else{
-      double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSecs();
-      double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSecs();
+      double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSec();
+      double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSec();
       estimator.predict(zImu,dtImu);
       // operating = true;
       // while(editing){
@@ -67,8 +67,8 @@ int main(int argc, char** argv){
       estimator.correct(zMarkers,dtMarkers);
       // operating = false;
     }
-    tsImuOld = ros::Time.fromNSec(tsImu.toNSec());
-    tsMarkersOld = ros::Time.fromNSec(tsMarkers.toNSec());
+    tsImuOld = ros::Time::fromNSec(tsImu.toNSec());
+    tsMarkersOld = ros::Time::fromNSec(tsMarkers.toNSec());
     robot_controller::State toPub;
     state = estimator.getState();
     for(int i=0;i<3;i++){//There are better ways
@@ -77,7 +77,7 @@ int main(int argc, char** argv){
       toPub.v[i] = state(i+7);
       toPub.ba[i] = state(i+10);
     }
-    toPub.q(3) = state(6);
+    toPub.q[3] = state(6);
     pub.publish(toPub);
     ros::spinOnce();
     loop_rate.sleep();

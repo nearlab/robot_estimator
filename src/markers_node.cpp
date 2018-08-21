@@ -5,6 +5,7 @@
 #include <vicon_bridge/Markers.h>
 #include <vicon_bridge/Marker.h>
 #include "robot_controller/Markers.h"
+#include <boost/array.hpp>
 #include <math.h> 
 #include <string>
 #include <cstring>
@@ -12,9 +13,9 @@
 
 ros::Publisher pub;
 ros::Subscriber subMarkers;
-std::vector<double> zMarkers;
+boost::array<double, 15> zMarkers;
 std::string robotNameStr;
-ros::Time tsMarkers;
+double tsMarkers;
 
 
 void markersCallback(const vicon_bridge::Markers msg){
@@ -27,7 +28,7 @@ void markersCallback(const vicon_bridge::Markers msg){
   // }
   // editing = true;
   for(int i=0;i<s;i++){
-    if(markers[i].subject_name.compare(robotName)){
+    if(markers[i].subject_name.compare(robotNameStr)){
       if(!markers[i].occluded){
         zMarkers[zIter++] = markers[i].translation.x;
         zMarkers[zIter++] = markers[i].translation.y;
@@ -42,7 +43,6 @@ void markersCallback(const vicon_bridge::Markers msg){
   //editing = false;
 }
 int main(int argc, char** argv){
-  zMarkers = std::vector<double>(15);
   ros::NodeHandle nh;
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
@@ -54,7 +54,7 @@ int main(int argc, char** argv){
   while(ros::ok()){
     robot_controller::Markers toPub;
     toPub.markers = zMarkers;
-    toPub.tStamp = tsMarkers.toSec();
+    toPub.tStamp = tsMarkers;
     pub.publish(toPub);
     
     ros::spinOnce();
