@@ -49,16 +49,16 @@ add_executable(sc_controller_node
 add_executable(markers_node
                src/markers_node.cpp)
 add_executable(estimator_node
-               src/estimator.cpp
+               src/estimator_node.cpp
                src/simulator.cpp
                src/quatMath.cpp
                src/params.cpp
-               src/estimator_node.cpp)
+               src/estimator.cpp)
 
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
 foreach(EXEC_FILE ${EXEC_LIST})
   target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES} Eigen3::Eigen)
-  add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS})
+  add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS} msg_pkg_generate_messages_cpp)
   install(TARGETS ${EXEC_FILE}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endforeach(EXEC_FILE ${EXEC_LIST})
