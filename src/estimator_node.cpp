@@ -11,7 +11,7 @@
 #include "estimator.h"
 #include "estimateStateFromMarkers.h"
 
-#include <string.h>
+#include <string>
 #include <array>
 
 Eigen::VectorXd zMarkers(15), zImu(7), state(12);
@@ -39,7 +39,7 @@ void imuCallback(const xsens_node::Imu msg){
 }
 
 int main(int argc, char** argv){
-  string robotName;
+  std::string robotName;
 	ros::NodeHandle nh;
 	nh.getParam("RobotName", robotName);
 	ros::init(argc,argv,strcat(robotName,"/estimator"));

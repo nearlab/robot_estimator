@@ -6,7 +6,7 @@
 #include <vicon_bridge/Marker.h>
 #include "robot_controller/Markers.h"
 #include <math.h> 
-#include <string.h>
+#include <string>
 
 ros::Publisher pub;
 ros::Subscriber subMarkers;
@@ -40,7 +40,7 @@ void markersCallback(const vicon_bridge::Markers msg){
   //editing = false;
 }
 int main(int argc, char** argv){
-	string robotName;
+	std::string robotName;
 	ros::NodeHandle nh;
 	nh.getParam("RobotName", robotName);
   ros::init(argc,argv,"markers");
