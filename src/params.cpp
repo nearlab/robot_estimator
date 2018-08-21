@@ -2,10 +2,11 @@
 #include "params.h"
 
 Params::Params(){
-  double sa,sg,sigmaa0,sigmaag0,sigmaa,taua,smarker,imuDelt;
+  double sa,sg,sigmaa0,sigmag0,sigmaa,taua,smarker,imuDelt;
   RMarkers = Eigen::MatrixXd(15,15);
   Q = Eigen::MatrixXd(9,9);
   markerLocs = Eigen::MatrixXd(5,3);
+  double pi = 3.14159265358979;
   imuDelt = .01;
   //Accelerometer white noise
   sa = pow((.08/sqrt(imuDelt)),2);
@@ -43,7 +44,7 @@ Params::Params(){
   this->Qmark.setIdentity();
   this->Qmark *= pow(.0014,2);
   this->RMarkers.setIdentity();
-  for(i=0;i<5;i++){
+  for(int i=0;i<5;i++){
     this->RMarkers.block(i,i,3,3) = this->Qmark;
   }
 
