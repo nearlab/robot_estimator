@@ -5,6 +5,7 @@
 #include "robot_controller/Control.h"
 #include <math.h> 
 #include <string>
+#include <cstring>
 
 Eigen::Vector3d r,v,a,f;
 Eigen::Vector4d q;//Unused as of yet
@@ -20,9 +21,11 @@ void controlCallback(const robot_controller::Control msg){
   f << msg.f;
 }
 int main(int argc, char** argv){
-  std::string robotName;
+  std::string robotNameStr;
   ros::NodeHandle nh;
-	nh.getParam("RobotName", robotName);
+  nh.getParam("RobotName", robotNameStr);
+  char robotName[robotNameStr.size() + 1];
+  strcpy(robotName,robotNameStr.c_str());
   ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);

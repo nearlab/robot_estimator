@@ -39,9 +39,11 @@ void imuCallback(const xsens_node::Imu msg){
 }
 
 int main(int argc, char** argv){
-  std::string robotName;
-	ros::NodeHandle nh;
-	nh.getParam("RobotName", robotName);
+  std::string robotNameStr;
+  ros::NodeHandle nh;
+  nh.getParam("RobotName", robotNameStr);
+  char robotName[robotNameStr.size() + 1];
+  strcpy(robotName,robotNameStr.c_str());
 	ros::init(argc,argv,strcat(robotName,"/estimator"));
 	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,stateCallback);
   subMarkers = nh.subscribe(strcat(robotName,"/markers"),1000,markersCallback);

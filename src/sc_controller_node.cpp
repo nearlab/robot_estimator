@@ -23,9 +23,11 @@ void stateCallback(const robot_controller::State msg){
   v << msg.v;
 }
 int main(int argc, char** argv){
-	std::string robotName;
-	ros::NodeHandle nh;
-	nh.getParam("RobotName", robotName);
+	std::string robotNameStr;
+  ros::NodeHandle nh;
+  nh.getParam("RobotName", robotNameStr);
+  char robotName[robotNameStr.size() + 1];
+  strcpy(robotName,robotNameStr.c_str());
   ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
