@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   roscpp
-  xsens_node
+  xsens_bridge
 )
 
 find_package(Eigen3 REQUIRED NO_MODULE)
@@ -38,6 +38,7 @@ catkin_package(CATKIN_DEPENDS
 #########
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/include
 )
 
 add_executable(dynamics_node

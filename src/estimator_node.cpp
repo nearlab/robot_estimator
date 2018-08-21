@@ -7,9 +7,8 @@
 #include <Eigen/Dense> 
 
 #include "robot_controller/State.h"
-#include "xsens_node/Imu.h"
+#include "xsens_bridge/Imu.h"
 #include "estimator.h"
-#include "estimateStateFromMarkers.h"
 
 #include <string>
 #include <array>
@@ -35,7 +34,7 @@ void markersCallback(const robot_controller::Markers msg){
 }   
 
 void imuCallback(const xsens_node::Imu msg){
-    zImu << msg.acc << msg.gyr;
+    zImu << msg.acc[0],msg.acc[1],msg.acc[2] << msg.gyr[0],msg.gyr[1],msg.gyr[2];
 }
 
 int main(int argc, char** argv){
