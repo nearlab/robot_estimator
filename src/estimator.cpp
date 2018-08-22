@@ -18,7 +18,7 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   Eigen::Vector3d wk = zImu.tail(3);
   Eigen::VectorXd dq(4);
   dq.head(3) = dt*wk/2;
-  dq.tail(1) = 1;//sqrt(1-pow((dt*wk/2).norm(),2));
+  dq.tail(1) << 1;//sqrt(1-pow((dt*wk/2).norm(),2));
   Eigen::Vector3d ak = zImu.head(3) - ba - T*(Eigen::Vector3d() << 0,0,9.8).finished();
   Eigen::Matrix3d wkx,akx;
   wkx = crossProductEquivalent(wk);
@@ -58,7 +58,7 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
 }
 void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers){
   Eigen::MatrixXd HMarkers = parseMeasMarkers(zMarkers);
-  if(HMarkers == NULL){
+  if(HMarkers.isApprox(Eigen::MatrixXd())){
     return;
   }
   Eigen::MatrixXd H = HMarkers;//Could potentially add in more measurements
@@ -72,7 +72,7 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
   this->state.segment(0,3) += dx.segment(0,3);
   Eigen::VectorXd dq(4);
   dq.head(3) = dx.segment(3,4);
-  dq.tail(1) = 1;//sqrt(1-pow((dt*dx.segment(3,3)/2).norm(),2));
+  dq.tail(1) << 1;//sqrt(1-pow((dt*dx.segment(3,3)/2).norm(),2));
   this->state.segment(3,4) = quatRot(this->state.segment(3,3),dq);
   this->state.segment(3,4) /= this->state.segment(3,4).norm();
   this->state.segment(7,6) += dx.segment(6,6);
@@ -81,7 +81,7 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
 }
 Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   //Returns the Jacobian for the measurement equation for the Vicon Markers
-  double n = zMarkersRaw.size();
+  int n = zMarkersRaw.size();
   boost::array<int,5> occluded;
   int nOccl = 0;
   for(int i=0;i<n*3;i++){
@@ -125,7 +125,7 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
             2*qw , -4*qz, 2*qy ,
             2*qx , 2*qy , 0    ;
   Eigen::MatrixXd H(3*(n-nOccl),12);
-  Eigen::VectorXd rMarker = this->params.markerLocs;
+  Eigen::MatrixXd rMarker = this->params.markerLocs;
   for(int i=0;i<n-nOccl;i++){
     H.block(i,0,3,3) = Eigen::MatrixXd::Identity(3,3);
     H.block(i,3,3,1) = dzdqx*(rMarker.row(i).transpose());
@@ -197,7 +197,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
       }else{
         lambda = lambda*sf*sf; //Square it to be more efficient with checking, since we're just dividing next time anyway
       }
-      Eigen::JacobiSVD<Eigen::MatrixXd> svd(A);
+      Eigen::JacobiSVD<Eigen::MatrixXd> svd(Ht*H);
       double rcond = svd.singularValues()(0)/svd.singularValues()(svd.singularValues().size()-1);
       if(rcond<1e-15){// If there isn't a step size small enough that offers any improvements, return.
         return;

@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Eigen3 REQUIRED NO_MODULE)
 
-add_message_files(DIRECTORY msg FILES
+add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES
   Control.msg
   Markers.msg
   State.msg
@@ -58,7 +58,7 @@ add_executable(estimator_node
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
 foreach(EXEC_FILE ${EXEC_LIST})
   target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES} Eigen3::Eigen)
-  add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS} msg_pkg_generate_messages_cpp)
+  add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
   install(TARGETS ${EXEC_FILE}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endforeach(EXEC_FILE ${EXEC_LIST})
