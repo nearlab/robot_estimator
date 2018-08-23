@@ -58,6 +58,7 @@ void setupPWMs(){
 }
 int main(int argc, char** argv){
   setupPWMs();
+  ros::init(argc,argv,"cans_controller");
   std::string robotNameStr;
   ros::NodeHandle nh;
   double gamma,alpha,mass,radius,wheelDist,pi;
@@ -76,7 +77,6 @@ int main(int argc, char** argv){
        1, -1/2      , -1/2     , 
        0, 0         , 0        ;
 
-  ros::init(argc,argv,strcat(robotName,"/cans_controller"));
   subState=nh.subscribe(strcat(robotName,"/sc_state"),2,stateCallback);
   ros::Rate loop_rate(10);
   while(ros::ok()){

@@ -22,6 +22,7 @@ void controlCallback(const robot_controller::Control msg){
   f << msg.f[0],msg.f[1],msg.f[2];
 }
 int main(int argc, char** argv){
+  ros::init(argc,argv,"dynamics");
   std::string robotNameStr;
   double Torb,mass,tau,nu;
   ros::NodeHandle nh;
@@ -34,7 +35,6 @@ int main(int argc, char** argv){
 
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
-  ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	
   subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   subControl=nh.subscribe(strcat(robotName,"/control"),1000,controlCallback);
