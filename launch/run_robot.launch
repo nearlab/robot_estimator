@@ -1,0 +1,65 @@
+<launch>
+
+  <node pkg="robot_controller"
+    type="dynamics_node"
+    name="dynamics_node"
+    output="screen">
+    <!-- Name of robot -->
+    <rosparam param="RobotName"> "GAMR1" </rosparam>
+    <!-- Orbital Period, seconds -->
+    <rosparam param="Torb"> 5236 </rosparam>
+    <!-- Mass of spacecraft -->
+    <rosparam param="sc_mass"> 100 </rosparam>
+    <!-- Time scaling between orbit and lab frames -->
+    <rosparam param="tau"> 20 </rosparam>
+    <!-- Distance Scaling between orbit and lab frames -->
+    <rosparam param="nu"> 2 </rosparam>
+
+  </node>
+  
+  <node pkg="robot_controller"
+    type="estimator_node"
+    name="estimator_node"
+    output="screen">
+    <!-- Name of robot -->
+    <rosparam param="RobotName"> "GAMR1" </rosparam>
+  </node>
+
+  <node pkg="robot_controller"
+    type="markers_node"
+    name="markers_node"
+    output="screen">
+    <!-- Name of robot -->
+    <rosparam param="RobotName"> "GAMR1" </rosparam>
+  </node>
+
+  <node pkg="robot_controller"
+    type="sc_controller_node"
+    name="sc_controller_node"
+    output="screen">
+    <!-- Name of robot -->
+    <rosparam param="RobotName"> "GAMR1" </rosparam>
+    <!-- Orbital Period, seconds -->
+    <rosparam param="Torb"> 5236 </rosparam>
+  </node>
+
+  <node pkg="robot_controller"
+    type="cans_controller_node"
+    name="cans_controller_node"
+    output="screen">
+    <!-- Name of robot -->
+    <rosparam param="RobotName"> "GAMR1" </rosparam>
+    <!-- Robot motor parameter -->
+    <rosparam param="alpha"> 17 </rosparam>
+    <!-- Robot motor parameter -->
+    <rosparam param="gamma"> 78 </rosparam>
+    <!-- Mass of robot -->
+    <rosparam param="mass"> 5.9 </rosparam>
+    <!-- Radius of the robot, used in Moment of Inertia calcs -->
+    <rosparam param="radius"> .365 </rosparam>
+    <!-- Distance between wheels and CM -->
+    <rosparam param="wheelDist"> .127 </rosparam>
+
+  </node>
+  
+</launch>

@@ -33,7 +33,7 @@ int main(int argc, char** argv){
   strcpy(robotName,robotNameStr.c_str());
   double n = 2*3.14159/Torb;
 
-  ros::init(argc,argv,strcat(robotName,"/dynamics"));
+  ros::init(argc,argv,strcat(robotName,"/sc_controller"));
   subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
   ros::Rate loop_rate(100);
