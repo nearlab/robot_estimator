@@ -36,6 +36,7 @@ void markersCallback(const robot_controller::Markers msg){
 
 void imuCallback(const xsens_bridge::Imu msg){
     zImu << msg.acc[0],msg.acc[1],msg.acc[2],msg.gyr[0],msg.gyr[1],msg.gyr[2];
+    tsImu = ros::Time(msg.tStamp);
 }
 
 int main(int argc, char** argv){
@@ -45,6 +46,8 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
+  tsImu = ros::Time(0);
+  tsMarkers = ros::Time(0);
 	
 	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,imuCallback);
   subMarkers = nh.subscribe(strcat(robotName,"/markers"),1000,markersCallback);
@@ -52,11 +55,18 @@ int main(int argc, char** argv){
   ros::Rate loop_rate(100);
   ros::Time tsImuOld,tsMarkersOld;
   bool first = true;
+  ROS_INFO("Estimator Node Initialized");
 
   while(ros::ok()){
     if(first){
       //Do things
+      if(tsImu.toSec() == 0 || tsMarkers.toSec() == 0){
+        ros::spinOnce();
+        loop_rate.sleep();
+        continue;
+      }
       estimator.estimateStateFromMarkers(zMarkers);
+      ROS_INFO("Estimator Initialized");
     }else{
       double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSec();
       double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSec();

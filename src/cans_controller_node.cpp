@@ -12,6 +12,8 @@ Eigen::Vector3d r,v,a,f;
 Eigen::Vector4d q;//Unused as of yet
 Eigen::MatrixXd K;
 
+ros::Time tsState;
+
 std::ofstream pwmWriter;
 
 ros::Publisher pub;
@@ -71,6 +73,7 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
+  tsState = ros::Time(0);
   double n = 2*pi/Torb;
   Eigen::Matrix3D D;
   D << 0, -sqrt(3)/2, sqrt(3)/2,
