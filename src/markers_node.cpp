@@ -48,7 +48,7 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
-  tsMarker = ros::Time(0);
+  tsMarkers = ros::Time(0);
 
 	subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
   pub=nh.advertise<robot_controller::Markers>(strcat(robotName,"/markers"),1000);
