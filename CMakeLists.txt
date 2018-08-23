@@ -58,10 +58,14 @@ add_executable(estimator_node
 add_executable(cans_controller_node
                src/cans_controller_node.cpp)
 
-set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
+set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node cans_controller_node)
 foreach(EXEC_FILE ${EXEC_LIST})
   target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES} Eigen3::Eigen)
   add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
   install(TARGETS ${EXEC_FILE}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endforeach(EXEC_FILE ${EXEC_LIST})
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  PATTERN ".svn" EXCLUDE
+)
