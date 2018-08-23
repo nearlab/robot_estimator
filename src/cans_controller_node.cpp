@@ -74,8 +74,7 @@ int main(int argc, char** argv){
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
   tsState = ros::Time(0);
-  double n = 2*pi/Torb;
-  Eigen::Matrix3D D;
+  Eigen::Matrix3d D;
   D << 0, -sqrt(3)/2, sqrt(3)/2,
        1, -1/2      , -1/2     , 
        0, 0         , 0        ;
@@ -95,7 +94,7 @@ int main(int argc, char** argv){
     A2 << 1.5*gamma/alpha,0,0,
           0, 1.5*gamma/alpha,0,
           0, 0, 3*gamma*wheelDist/alpha;
-    thetaStar = atan2(r(2),r(1));
+    double thetaStar = atan2(r(2),r(1));
     if(thetaStar<-pi/2 && theta>pi/2){
       thetaStar = thetaStar + pi/2;
     }else if(thetaStar>pi/2 && theta<-pi/2){
