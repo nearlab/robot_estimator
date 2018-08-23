@@ -19,6 +19,7 @@ add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES
   Markers.msg
   State.msg
   StateCov.msg
+  SpacecraftState.msg
 )
 
 generate_messages( DEPENDENCIES
@@ -54,6 +55,8 @@ add_executable(estimator_node
                src/quatMath.cpp
                src/params.cpp
                src/estimator.cpp)
+add_executable(cans_controller_node
+               src/cans_controller_node.cpp)
 
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node)
 foreach(EXEC_FILE ${EXEC_LIST})

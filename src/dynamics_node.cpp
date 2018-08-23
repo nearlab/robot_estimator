@@ -3,7 +3,7 @@
 #include <geometry_msgs/Vector3.h>
 #include "robot_controller/Control.h"
 #include "robot_controller/State.h"
-#include "robot_controller/SpacecraftState"
+#include "robot_controller/SpacecraftState.h"
 #include <math.h> 
 #include <string>
 #include <cstring>
