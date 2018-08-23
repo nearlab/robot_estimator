@@ -48,10 +48,16 @@ int main(int argc, char** argv){
   strcpy(robotName,robotNameStr.c_str());
   tsImu = ros::Time(0);
   tsMarkers = ros::Time(0);
-	
-	subImu = nh.subscribe(strcat(robotName,"/imu"),1000,imuCallback);
+
+  subImu = nh.subscribe(strcat(robotName,"/imu"),1000,imuCallback);
   subMarkers = nh.subscribe(strcat(robotName,"/markers"),1000,markersCallback);
   pub = nh.advertise<robot_controller::State>(strcat(robotName,"/state"),1000);
+  ROS_INFO(robotName);
+  ROS_INFO("WELL I TRIED");
+  nh.getParam("estimator_node/RobotName",robotNameStr);
+  char robotName2[robotNameStr.size()+1];
+  strcpy(robotName2,robotNameStr.c_str());
+  ROS_INFO(robotName2);
   ros::Rate loop_rate(100);
   ros::Time tsImuOld,tsMarkersOld;
   bool first = true;
