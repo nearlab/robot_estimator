@@ -61,5 +61,13 @@
     <rosparam param="wheelDist"> .127 </rosparam>
 
   </node>
+
+  <node pkg="xsens_bridge"
+    type="xsens_bridge"
+    name="xsens_bridge"
+    output="screen">
+    <!-- Name of robot -->
+    <rosparam param="RobotName"> "GAMR1" </rosparam>
+  </node>
   
 </launch>

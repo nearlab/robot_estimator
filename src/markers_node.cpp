@@ -43,11 +43,11 @@ void markersCallback(const vicon_bridge::Markers msg){
   //editing = false;
 }
 int main(int argc, char** argv){
+  ros::init(argc,argv,"markers");
   ros::NodeHandle nh;
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
-  ros::init(argc,argv,"markers");
 	subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
   pub=nh.advertise<robot_controller::Markers>(strcat(robotName,"/markers"),1000);
   ros::Rate loop_rate(100);

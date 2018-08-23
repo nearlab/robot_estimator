@@ -20,6 +20,7 @@ void stateCallback(const robot_controller::State msg){
   v << msg.v[0],msg.v[1],msg.v[2];
 }
 int main(int argc, char** argv){
+  ros::init(argc,argv,"sc_controller");
   K = Eigen::MatrixXd(3,6);
   K << 4.4814, -.2019, 0, 42.5742, .0015, 0,
      .2019, 4.4676, 0, .0015, 42.5092, 0,
@@ -33,7 +34,7 @@ int main(int argc, char** argv){
   strcpy(robotName,robotNameStr.c_str());
   double n = 2*3.14159/Torb;
 
-  ros::init(argc,argv,strcat(robotName,"/sc_controller"));
+  
   subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
   ros::Rate loop_rate(100);
