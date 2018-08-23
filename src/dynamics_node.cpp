@@ -3,6 +3,7 @@
 #include <geometry_msgs/Vector3.h>
 #include "robot_controller/Control.h"
 #include "robot_controller/State.h"
+#include "robot_controller/SpacecraftState"
 #include <math.h> 
 #include <string>
 #include <cstring>
@@ -22,30 +23,39 @@ void controlCallback(const robot_controller::Control msg){
 }
 int main(int argc, char** argv){
   std::string robotNameStr;
-  double Torb,mass;
+  double Torb,mass,tau,nu;
   ros::NodeHandle nh;
   nh.getParam("RobotName", robotNameStr);
   nh.getParam("Torb", Torb);
-  nh.getParam("mass", mass);
-  double n = 2*pi/Torb; //Mean motio  n  
+  nh.getParam("sc_mass", mass);
+  nh.getParam("tau",tau);
+  nh.getParam("nu",nu);
+  double n = 2*pi/Torb; //Mean motion 
+
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
   ros::init(argc,argv,strcat(robotName,"/dynamics"));
 	
   subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   subControl=nh.subscribe(strcat(robotName,"/control"),1000,controlCallback);
-  pub=nh.advertise<geometry_msgs::Vector3>(strcat(robotName,"/sc_accel"),1000);
+  pub=nh.advertise<robot_controller::SpacecraftState>(strcat(robotName,"/sc_state"),2);
   
   ros::Rate loop_rate(100);
   while(ros::ok()){
     a(0) = 3*n*n*r(0)+2*v(1)*n+f(0)/mass;
     a(1) = -2*v(1)*n+f(1)/mass;
     a(2) = -n*n*r(2)+f(2)/mass;
-    geometry_msgs::Vector3 output;
-    output.x = a(0);
-    output.y = a(1);
-    output.z = a(2);
-    pub.publish(output);
+    robot_controller::SpacecraftState out;
+    for(int i=0;i<3;i++){
+      out.a[i] = a(i)*tau*tau/nu;
+      out.r[i] = r(i)/nu;
+      out.v[i] = v(i)*tau/nu;
+      out.q[i] = q(i);
+    }
+    out.q[3] = q(3);
+    out.tStamp = (ros::Time::now()).toSec();
+
+    pub.publish(out);
     
     ros::spinOnce();
     loop_rate.sleep();		
