@@ -11,6 +11,7 @@
 Eigen::Vector3d r,v,a,f;
 Eigen::Vector4d q;//Unused as of yet
 Eigen::MatrixXd K;
+ros::Time tsState;
 
 ros::Publisher pub;
 ros::Subscriber subState;
@@ -18,6 +19,7 @@ void stateCallback(const robot_controller::State msg){
   r << msg.r[0],msg.r[1],msg.r[2];
   q << msg.q[0],msg.q[1],msg.q[2],msg.q[3];
   v << msg.v[0],msg.v[1],msg.v[2];
+  tsState = msg.toSec();
 }
 int main(int argc, char** argv){
   ros::init(argc,argv,"sc_controller");
@@ -32,13 +34,20 @@ int main(int argc, char** argv){
   nh.getParam("Torb", Torb);
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
+  tsState = ros::Time(0);
   double n = 2*3.14159/Torb;
 
   
   subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
   pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
   ros::Rate loop_rate(100);
+  ROS_INFO("SC Controller Node Initialized");
   while(ros::ok()){
+    if(tsState == 0){
+      ros::spinOnce();
+      loop_rate.sleep();		
+      continue;
+    }
     double radEst = r.norm();
     double radDes = 5;//meters in the space frame, I guess. Honestly, this is a bad idea, since S/C don't orbit that close. 
     double period = 86400.0/16.5/4;
@@ -59,6 +68,7 @@ int main(int argc, char** argv){
     for(int i=0;i<3;i++){
       toPub.f[i] = f(i);
     }
+    toPub.tStamp = (ros::Time::now()).toSec();
     pub.publish(toPub);
     
     ros::spinOnce();

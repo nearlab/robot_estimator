@@ -48,10 +48,18 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotNameStr);
   char robotName[robotNameStr.size() + 1];
   strcpy(robotName,robotNameStr.c_str());
+  tsMarker = ros::Time(0);
+
 	subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
   pub=nh.advertise<robot_controller::Markers>(strcat(robotName,"/markers"),1000);
   ros::Rate loop_rate(100);
+  ROS_INFO("Markers Node Initialized");
   while(ros::ok()){
+    if(tsMarkers.toSec() == 0){
+      ros::spinOnce();
+      loop_rate.sleep();		
+      continue;
+    }
     robot_controller::Markers toPub;
     toPub.markers = zMarkers;
     toPub.tStamp = tsMarkers.toSec();

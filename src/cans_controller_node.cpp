@@ -81,7 +81,13 @@ int main(int argc, char** argv){
 
   subState=nh.subscribe(strcat(robotName,"/sc_state"),2,stateCallback);
   ros::Rate loop_rate(10);
+  ROS_INFO("Cans Controller Node Initialized");
   while(ros::ok()){
+    if(tsState.toSec() == 0){
+      ros::spinOnce();
+      loop_rate.sleep();		
+      continue;
+    }
     Eigen::Matrix3d A1,A2,R; //From A1 * xdd + A2 * xd = u
     double theta = 2*atan2(q(3),q(2));
     double d = pi/3;
