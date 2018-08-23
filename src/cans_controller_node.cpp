@@ -25,42 +25,43 @@ void stateCallback(const robot_controller::SpacecraftState msg){
   a << msg.a[0],msg.a[1],msg.a[2];
 }
 void setupPWMs(){
-  
   pwmWriter.open("/sys/class/pwm/pwmchip1/export",std::ofstream::out);
-  pwmWriter << 0 <<std::endl;
+  pwmWriter << 0;
   pwmWriter.close();
+  pwmWriter.open("/sys/class/pwm/pwmchip6/export",std::ofstream::out);
+  pwmWriter << 0;
+  pwmWriter.close();
+  pwmWriter.open("/sys/class/pwm/pwmchip4/export",std::ofstream::out);
+  pwmWriter << 0;
+  pwmWriter.close();
+
+  ros::Duration(3).sleep();
+
   pwmWriter.open("/sys/class/pwm/pwmchip1/pmw-1:0/period",std::ofstream::out);
-  pwmWriter << 33333 <<std::endl;
+  pwmWriter << 33333;
   pwmWriter.close();
   pwmWriter.open("/sys/class/pwm/pwmchip1/pmw-1:0/enable",std::ofstream::out);
-  pwmWriter << 1 <<std::endl;
+  pwmWriter << 1;
   pwmWriter.close();
 
-
-  pwmWriter.open("/sys/class/pwm/pwmchip4/export",std::ofstream::out);
-  pwmWriter << 0 <<std::endl;
-  pwmWriter.close();
   pwmWriter.open("/sys/class/pwm/pwmchip4/pmw-4:0/period",std::ofstream::out);
-  pwmWriter << 33333 <<std::endl;
+  pwmWriter << 33333;
   pwmWriter.close();
   pwmWriter.open("/sys/class/pwm/pwmchip4/pmw-4:0/enable",std::ofstream::out);
-  pwmWriter << 1 <<std::endl;
+  pwmWriter << 1;
   pwmWriter.close();
 
-
-  pwmWriter.open("/sys/class/pwm/pwmchip6/export",std::ofstream::out);
-  pwmWriter << 0 <<std::endl;
-  pwmWriter.close();
   pwmWriter.open("/sys/class/pwm/pwmchip6/pmw-6:0/period",std::ofstream::out);
-  pwmWriter << 33333 <<std::endl;
+  pwmWriter << 33333;
   pwmWriter.close();
   pwmWriter.open("/sys/class/pwm/pwmchip6/pmw-6:0/enable",std::ofstream::out);
-  pwmWriter << 1 <<std::endl;
+  pwmWriter << 1;
   pwmWriter.close();
 }
 int main(int argc, char** argv){
-  setupPWMs();
+  
   ros::init(argc,argv,"cans_controller");
+  setupPWMs();
   std::string robotNameStr;
   ros::NodeHandle nh;
   double gamma,alpha,mass,radius,wheelDist,pi;
@@ -113,13 +114,13 @@ int main(int argc, char** argv){
     u = u/3.33*33333;
     //Write duty cycle to pwm files
     pwmWriter.open("/sys/class/pwm/pwmchip1/pmw-1:0/duty_cycle",std::ofstream::out);
-    pwmWriter << u(0) <<std::endl;
+    pwmWriter << u(0);
     pwmWriter.close();
     pwmWriter.open("/sys/class/pwm/pwmchip4/pmw-4:0/duty_cycle",std::ofstream::out);
-    pwmWriter << u(1) <<std::endl;
+    pwmWriter << u(1);
     pwmWriter.close();
     pwmWriter.open("/sys/class/pwm/pwmchip6/pmw-6:0/duty_cycle",std::ofstream::out);//std::ofstream::append, for logging.
-    pwmWriter << u(2) <<std::endl;
+    pwmWriter << u(2);
     pwmWriter.close();
 
     ros::spinOnce();
