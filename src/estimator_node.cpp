@@ -41,23 +41,15 @@ void imuCallback(const xsens_bridge::Imu msg){
 
 int main(int argc, char** argv){
   ros::init(argc,argv,"estimator");
-  std::string robotNameStr;
+  std::string robotName;
   ros::NodeHandle nh;
-  nh.getParam("RobotName", robotNameStr);
-  char robotName[robotNameStr.size() + 1];
-  strcpy(robotName,robotNameStr.c_str());
+  nh.getParam("RobotName", robotName);
   tsImu = ros::Time(0);
   tsMarkers = ros::Time(0);
 
-  subImu = nh.subscribe(strcat(robotName,"/imu"),1000,imuCallback);
-  subMarkers = nh.subscribe(strcat(robotName,"/markers"),1000,markersCallback);
-  pub = nh.advertise<robot_controller::State>(strcat(robotName,"/state"),1000);
-  ROS_INFO(robotName);
-  ROS_INFO("WELL I TRIED");
-  nh.getParam("estimator_node/RobotName",robotNameStr);
-  char robotName2[robotNameStr.size()+1];
-  strcpy(robotName2,robotNameStr.c_str());
-  ROS_INFO(robotName2);
+  subImu = nh.subscribe(robotName+std::string("/imu"),1000,imuCallback);
+  subMarkers = nh.subscribe(robotName+std::string("/markers"),1000,markersCallback);
+  pub = nh.advertise<robot_controller::State>(robotName+std::string("/state"),1000);
   ros::Rate loop_rate(100);
   ros::Time tsImuOld,tsMarkersOld;
   bool first = true;

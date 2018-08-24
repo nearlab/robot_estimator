@@ -26,10 +26,10 @@ void controlCallback(const robot_controller::Control msg){
 }
 int main(int argc, char** argv){
   ros::init(argc,argv,"dynamics");
-  std::string robotNameStr;
+  std::string robotName;
   double Torb,mass,tau,nu;
   ros::NodeHandle nh;
-  nh.getParam("RobotName", robotNameStr);
+  nh.getParam("RobotName", robotName);
   nh.getParam("Torb", Torb);
   nh.getParam("sc_mass", mass);
   nh.getParam("tau",tau);
@@ -38,12 +38,10 @@ int main(int argc, char** argv){
   tsControl = ros::Time(0);
   tsState = ros::Time(0);
 
-  char robotName[robotNameStr.size() + 1];
-  strcpy(robotName,robotNameStr.c_str());
 	
-  subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
-  subControl=nh.subscribe(strcat(robotName,"/control"),1000,controlCallback);
-  pub=nh.advertise<robot_controller::SpacecraftState>(strcat(robotName,"/sc_state"),2);
+  subState=nh.subscribe(robotName+std::string("/state"),1000,stateCallback);
+  subControl=nh.subscribe(robotName+std::string("/control"),1000,controlCallback);
+  pub=nh.advertise<robot_controller::SpacecraftState>(robotName+std::string("/sc_state"),2);
   
   ros::Rate loop_rate(100);
   ROS_INFO("Dynamics Node Initialized");

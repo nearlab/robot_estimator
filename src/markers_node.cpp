@@ -14,7 +14,7 @@
 ros::Publisher pub;
 ros::Subscriber subMarkers;
 boost::array<double, 15> zMarkers;
-std::string robotNameStr;
+std::string robotName;
 ros::Time tsMarkers;
 
 
@@ -28,7 +28,7 @@ void markersCallback(const vicon_bridge::Markers msg){
   // }
   // editing = true;
   for(int i=0;i<s;i++){
-    if(markers[i].subject_name.compare(robotNameStr)){
+    if(markers[i].subject_name.compare(robotName)){
       if(!markers[i].occluded){
         zMarkers[zIter++] = markers[i].translation.x;
         zMarkers[zIter++] = markers[i].translation.y;
@@ -45,13 +45,11 @@ void markersCallback(const vicon_bridge::Markers msg){
 int main(int argc, char** argv){
   ros::init(argc,argv,"markers");
   ros::NodeHandle nh;
-  nh.getParam("RobotName", robotNameStr);
-  char robotName[robotNameStr.size() + 1];
-  strcpy(robotName,robotNameStr.c_str());
+  nh.getParam("RobotName", robotName);
   tsMarkers = ros::Time(0);
 
-	subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
-  pub=nh.advertise<robot_controller::Markers>(strcat(robotName,"/markers"),1000);
+  subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
+  pub=nh.advertise<robot_controller::Markers>(robotName+std::string("/markers"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("Markers Node Initialized");
   while(ros::ok()){

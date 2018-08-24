@@ -35,7 +35,7 @@ void setupPWMs(){
   pwmWriter << 0 <<"\n";
   pwmWriter.close();
 
-  ros::Duration(3).sleep();
+  ros::Duration(2).sleep();
 
   pwmWriter.open("/sys/class/pwm/pwmchip1/pwm-1:0/period",std::ofstream::out);
   pwmWriter << 33333 <<"\n";
@@ -61,7 +61,7 @@ void setupPWMs(){
 int main(int argc, char** argv){
   
   ros::init(argc,argv,"cans_controller");
-  std::string robotNameStr;
+  std::string robotName;
   ros::NodeHandle nh;
   setupPWMs();
   double gamma,alpha,mass,radius,wheelDist,pi;
@@ -71,16 +71,14 @@ int main(int argc, char** argv){
   nh.getParam("mass",mass);
   nh.getParam("radius",radius);
   nh.getParam("wheelDist",wheelDist);
-  nh.getParam("RobotName", robotNameStr);
-  char robotName[robotNameStr.size() + 1];
-  strcpy(robotName,robotNameStr.c_str());
+  nh.getParam("RobotName", robotName);
   tsState = ros::Time(0);
   Eigen::Matrix3d D;
   D << 0, -sqrt(3)/2, sqrt(3)/2,
        1, -1/2      , -1/2     , 
        0, 0         , 0        ;
 
-  subState=nh.subscribe(strcat(robotName,"/sc_state"),2,stateCallback);
+  subState=nh.subscribe(robotName+std::string("/sc_state"),2,stateCallback);
   ros::Rate loop_rate(10);
   ROS_INFO("Cans Controller Node Initialized");
   while(ros::ok()){

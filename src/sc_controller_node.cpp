@@ -28,18 +28,16 @@ int main(int argc, char** argv){
      .2019, 4.4676, 0, .0015, 42.5092, 0,
      0, 0, 4.4675, 0, 0, 42.5090;
   double Torb;
-  std::string robotNameStr;
+  std::string robotName;
   ros::NodeHandle nh;
-  nh.getParam("RobotName", robotNameStr);
+  nh.getParam("RobotName", robotName);
   nh.getParam("Torb", Torb);
-  char robotName[robotNameStr.size() + 1];
-  strcpy(robotName,robotNameStr.c_str());
   tsState = ros::Time(0);
   double n = 2*3.14159/Torb;
 
   
-  subState=nh.subscribe(strcat(robotName,"/state"),1000,stateCallback);
-  pub=nh.advertise<robot_controller::Control>(strcat(robotName,"/control"),1000);
+  subState=nh.subscribe(robotName+std::string("/state"),1000,stateCallback);
+  pub=nh.advertise<robot_controller::Control>(robotName+std::string("/control"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("SC Controller Node Initialized");
   while(ros::ok()){
