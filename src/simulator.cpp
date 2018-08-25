@@ -2,9 +2,9 @@
 
 Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& params, const std::vector<int> occluded){
   int nOccl = 0;
-  int n = params.markerLocs.col(0).size();
+  int n = params.markerLocs.rows();
   Eigen::Matrix3d T = quat2rot(state.segment(3,4));
-  Eigen::VectorXd zRaw(n);
+  Eigen::VectorXd zRaw = Eigen::VectorXd::Zero(3*n);
   int ind = 0;
   for(int i=0;i<n;i++){
     if(occluded[i] == 1){//is occluded. Yes ==1 is pedantic, but so is your mother
@@ -12,7 +12,7 @@ Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& para
     }else{//not occluded. The joke about your mother was uncalled for, and I apologize.
       zRaw.segment(ind,3) = state.head(3) + T.transpose()*params.markerLocs.row(i).transpose();
       ind+=3;
-    }
+     }
   }
   if(nOccl == n){
     return Eigen::VectorXd();

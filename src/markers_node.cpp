@@ -28,11 +28,12 @@ void markersCallback(const vicon_bridge::Markers msg){
   // }
   // editing = true;
   for(int i=0;i<s;i++){
-    if(markers[i].subject_name.compare(robotName)){
+    std::string markerName = markers[i].subject_name;
+    if((markerName.compare(robotName))==0){
       if(!markers[i].occluded){
-        zMarkers[zIter++] = markers[i].translation.x;
-        zMarkers[zIter++] = markers[i].translation.y;
-        zMarkers[zIter++] = markers[i].translation.z;
+        zMarkers[zIter++] = markers[i].translation.x/1000;
+        zMarkers[zIter++] = markers[i].translation.y/1000;
+        zMarkers[zIter++] = markers[i].translation.z/1000;
       }else{
         zMarkers[zIter++] = std::numeric_limits<double>::quiet_NaN();
         zMarkers[zIter++] = std::numeric_limits<double>::quiet_NaN();
@@ -48,7 +49,7 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotName);
   tsMarkers = ros::Time(0);
 
-  subMarkers=nh.subscribe("vicon_bridge/Markers",1000,markersCallback);
+  subMarkers=nh.subscribe("vicon/markers",1000,markersCallback);
   pub=nh.advertise<robot_controller::Markers>(robotName+std::string("/markers"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("Markers Node Initialized");
