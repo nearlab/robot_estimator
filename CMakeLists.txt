@@ -9,18 +9,19 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   roscpp
-  vicon_bridge
 )
 
 find_package(Eigen3 REQUIRED NO_MODULE)
 
 add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES
   Control.msg
-  Markers.msg
+  MarkersParsed.msg
   State.msg
   StateCov.msg
   SpacecraftState.msg
   Imu.msg
+  Marker.msg
+  Markers.msg
 )
 
 generate_messages( DEPENDENCIES
@@ -33,7 +34,6 @@ catkin_package(CATKIN_DEPENDS
   geometry_msgs
   roscpp
   message_runtime
-  vicon_bridge
 )
 
 #########

@@ -2,12 +2,10 @@
 #include <ros/ros.h>
 #include <time.h>
 #include <geometry_msgs/Point.h>
-#include <vicon_bridge/Markers.h>
-#include <vicon_bridge/Marker.h>
 #include <Eigen/Dense> 
 
 #include "robot_controller/State.h"
-#include "robot_controller/Markers.h"
+#include "robot_controller/MarkersParsed.h"
 #include "xsens_bridge/Imu.h"
 #include "estimator.h"
 
@@ -27,7 +25,7 @@ ros::Subscriber subMarkers, subImu;
 
 ros::Time tsMarkers, tsImu;
 
-void markersCallback(const robot_controller::Markers msg){
+void markersCallback(const robot_controller::MarkersParsed msg){
   tsMarkers = ros::Time(msg.tStamp);
   for(int i=0;i<15;i++){
     zMarkers(i) = msg.markers[i];
