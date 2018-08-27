@@ -23,7 +23,7 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   Eigen::Matrix3d wkx,akx;
   wkx = crossProductEquivalent(wk);
   akx = crossProductEquivalent(ak);
-  ROS_INFO_STREAM("q.norm()"<<q.norm());
+  
 
   Eigen::VectorXd rk(3),vk(3),qk(4),bak(3);
   rk = r + v*dt + 1/2*Tt*ak*pow(dt,2) - 1/6*Tt*akx*wk*pow(dt,3);

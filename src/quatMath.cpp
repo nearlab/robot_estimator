@@ -7,6 +7,7 @@ Eigen::Matrix3d quat2rot(const Eigen::VectorXd& q){
 }
 Eigen::VectorXd quatRot(const Eigen::VectorXd& q, const Eigen::VectorXd& dq){
   Eigen::VectorXd qOut = (Eigen::MatrixXd::Identity(4,4)*dq(3)+skew(dq))*q;
+  return qOut;
 }
 Eigen::MatrixXd skew(const Eigen::VectorXd& q){
   Eigen::MatrixXd mat(4,4);
