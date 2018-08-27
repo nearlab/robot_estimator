@@ -61,7 +61,11 @@ void setupPWMs(){
 int main(int argc, char** argv){
   
   ros::init(argc,argv,"cans_controller");
+<<<<<<< HEAD
   std::string robotName;
+=======
+  std::string robotNameStr;
+>>>>>>> da30544b3e637ad82310578adaf234ab937ba6be
   ros::NodeHandle nh;
   setupPWMs();
   double gamma,alpha,mass,radius,wheelDist,pi;
