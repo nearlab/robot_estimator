@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   roscpp
-  xsens_bridge
+  vicon_bridge
 )
 
 find_package(Eigen3 REQUIRED NO_MODULE)
@@ -20,6 +20,7 @@ add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES
   State.msg
   StateCov.msg
   SpacecraftState.msg
+  Imu.msg
 )
 
 generate_messages( DEPENDENCIES
@@ -32,7 +33,7 @@ catkin_package(CATKIN_DEPENDS
   geometry_msgs
   roscpp
   message_runtime
-  xsens_bridge
+  vicon_bridge
 )
 
 #########
@@ -57,6 +58,8 @@ add_executable(estimator_node
                src/estimator.cpp)
 add_executable(cans_controller_node
                src/cans_controller_node.cpp)
+add_executable(imu_sim_node
+               src/imu_sim_node.cpp)
 
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node cans_controller_node)
 foreach(EXEC_FILE ${EXEC_LIST})

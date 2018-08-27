@@ -50,9 +50,9 @@
 
   </node>
 
-  <node pkg="xsens_bridge"
-    type="xsens_bridge"
-    name="xsens_bridge"
+  <node pkg="robot_controller"
+    type="imu_sim_node"
+    name="imu_sim_node"
     output="screen">
   </node>
   

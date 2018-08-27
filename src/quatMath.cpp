@@ -24,3 +24,8 @@ Eigen::Matrix3d crossProductEquivalent(const Eigen::Vector3d& a){
         -a(1),a(0),0;
   return ax;
 }
+Eigen::Vector4d inverse(const Eigen::Vector4d& q){
+  Eigen::Vector4d qinv;
+  qinv << -q(0),-q(1),-q(2),q(3);
+  return qinv;
+}
