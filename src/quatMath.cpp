@@ -11,10 +11,10 @@ Eigen::VectorXd quatRot(const Eigen::VectorXd& q, const Eigen::VectorXd& dq){
 }
 Eigen::MatrixXd skew(const Eigen::VectorXd& q){
   Eigen::MatrixXd mat(4,4);
-  mat << 0    ,q(3) ,-q(2),q(1),
-         -q(3),0    ,q(1) ,q(2),
-         q(2) ,-q(1),0    ,q(3),
-         -q(1),-q(2),-q(3),0   ;
+  mat << 0    ,q(2) ,-q(1),q(0),
+         -q(2),0    ,q(0) ,q(1),
+         q(1) ,-q(0),0    ,q(2),
+         -q(0),-q(1),-q(2),0   ;
   return mat;
 }
 Eigen::Matrix3d crossProductEquivalent(const Eigen::Vector3d& a){

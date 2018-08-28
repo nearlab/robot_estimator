@@ -40,7 +40,6 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
 
   //Update error covariance
   Eigen::Matrix3d wxax = crossProductEquivalent(wkx*ak);
-  ROS_INFO("AIGHT");
   Eigen::MatrixXd F,M;
   F = Eigen::MatrixXd(12,12);
   M = Eigen::MatrixXd(12,9);
@@ -50,7 +49,6 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
        z3, quat2rot(dq)                          , z3   , z3,
        z3, pow(dt,2)/2*Tt*wxax-dt*Tt*akx         , i3   , pow(dt,2)*Tt*wkx-dt*Tt,
        z3, z3                                    , z3   , i3;
-  ROS_INFO("heh");
   M << pow(dt,3)*Tt*wkx-pow(dt,2)*Tt,-pow(dt,3)/6*Tt*akx,z3,
        z3                           ,-dt*i3             ,z3,
        pow(dt,2)/2*Tt*wkx-dt*Tt     ,-pow(dt,2)/2*Tt*akx,z3,
@@ -59,10 +57,12 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   this->P = F*this->P*F.transpose() + M*this->params.Q*M.transpose();
 }
 void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers){
+  ROS_INFO_STREAM("predicting");
   Eigen::MatrixXd HMarkers = parseMeasMarkers(zMarkers);
   if(HMarkers.isApprox(Eigen::MatrixXd())){
     return;
   }
+  ROS_INFO_STREAM("predicting still");
   Eigen::MatrixXd H = HMarkers;//Could potentially add in more measurements
   Eigen::MatrixXd R = this->params.RMarkers;
   Eigen::MatrixXd Y = H*this->P*H.transpose() + R;
@@ -71,10 +71,12 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
   Eigen::VectorXd dzMarkers = (zMarkers - markerSimulator(this->state,this->params));
   Eigen::VectorXd zHatError = dzMarkers;
   Eigen::VectorXd dx = K*zHatError;
+  ROS_INFO_STREAM("y ya");
   this->state.segment(0,3) += dx.segment(0,3);
   Eigen::VectorXd dq(4);
   dq.head(3) = dx.segment(3,4);
   dq.tail(1) << 1;//sqrt(1-pow((dt*dx.segment(3,3)/2).norm(),2));
+  ROS_INFO_STREAM("stilllll");
   this->state.segment(3,4) = quatRot(this->state.segment(3,4),dq);
   this->state.segment(3,4) /= this->state.segment(3,4).norm();
   this->state.segment(7,6) += dx.segment(6,6);
@@ -90,7 +92,7 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
     if(std::isnan(zMarkersRaw(i*3))){
       int ind = ceil(i/3);
       if(occluded[ind]==0){
-        nOccl = nOccl+1;
+        nOccl++;
         occluded[ind] = 1;
       }
     }
@@ -216,9 +218,9 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     x = x + dx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
-    ROS_INFO_STREAM("cost:"<<cost<<"\tdx(1)"<<dx(1)<<"\tx(1)"<<x(1)<<"\tdzMarkers(1)"<<dzMarkers(1));
 
   }
+  ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count);
   this->state.head(7) = x;
   isInitialized = true;
 }
