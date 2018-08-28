@@ -30,7 +30,6 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   vk = v + ak*dt - 1/2*Tt*akx*wk*pow(dt,2);
   qk = quatRot(q,dq);
   qk.head(2) << 0,0;
-  ROS_INFO_STREAM("qk.norm()"<<qk.norm());
   qk = qk/qk.norm();
   bak = ba;
     state.segment(0,3) = rk;
@@ -57,12 +56,10 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   this->P = F*this->P*F.transpose() + M*this->params.Q*M.transpose();
 }
 void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers){
-  ROS_INFO_STREAM("predicting");
   Eigen::MatrixXd HMarkers = parseMeasMarkers(zMarkers);
   // if(HMarkers.isApprox(Eigen::MatrixXd())){
   //   return;
   // }
-  ROS_INFO_STREAM("predicting still");
   Eigen::MatrixXd H = HMarkers;//Could potentially add in more measurements
   Eigen::MatrixXd R = this->params.RMarkers;
   Eigen::MatrixXd Y = H*this->P*H.transpose() + R;
@@ -71,12 +68,10 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
   Eigen::VectorXd dzMarkers = (zMarkers - markerSimulator(this->state,this->params));
   Eigen::VectorXd zHatError = dzMarkers;
   Eigen::VectorXd dx = K*zHatError;
-  ROS_INFO_STREAM("y ya");
   this->state.segment(0,3) += dx.segment(0,3);
   Eigen::VectorXd dq(4);
   dq.head(3) = dx.segment(3,3);
   dq.tail(1) << 1;//sqrt(1-pow((dt*dx.segment(3,3)/2).norm(),2));
-  ROS_INFO_STREAM("stilllll");
   this->state.segment(3,4) = quatRot(this->state.segment(3,4),dq);
   this->state.segment(3,4) /= this->state.segment(3,4).norm();
   this->state.segment(7,6) += dx.segment(6,6);
@@ -88,7 +83,6 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   int n = zMarkersRaw.size()/3;
   boost::array<int,5> occluded;
   int nOccl = 0;
-  ROS_INFO_STREAM("processing measurement:"<<n<<","<<zMarkersRaw.size());
   for(int i=0;i<n*3;i++){
     if(std::isnan(zMarkersRaw(i))){
       int ind = ceil(i/3);
@@ -101,7 +95,6 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   if((n-nOccl)==0){
     return Eigen::MatrixXd();
   }
-  ROS_INFO_STREAM("still processing measurement");
   Eigen::VectorXd zMarkers(3*(n-nOccl));
   if(nOccl>0){
     int indTemp = 1;
@@ -119,7 +112,6 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   double qz = this->state(5);
   double qw = this->state(6);
   Eigen::Matrix3d dzdqx,dzdqy,dzdqz;
-  ROS_INFO_STREAM("anfd processing measurement");
   dzdqx <<  0    , 2*qy , 2*qz ,
             2*qy , -4*qx, -2*qw,
             2*qz , 2*qw , -4*qx;
@@ -135,7 +127,6 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   Eigen::MatrixXd rMarker = this->params.markerLocs;
   
   for(int i=0;i<n-nOccl;i++){
-    ROS_INFO_STREAM("yep processing measurement"<<i<<"\t(n-nOccl)"<<(n-nOccl));
     H.block(i*3,0,3,3) = Eigen::MatrixXd::Identity(3,3);
     H.block(i*3,3,3,1) = dzdqx*(rMarker.row(i).transpose());
     H.block(i*3,4,3,1) = dzdqy*(rMarker.row(i).transpose());

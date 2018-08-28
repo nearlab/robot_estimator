@@ -67,15 +67,12 @@ int main(int argc, char** argv){
     }else{
       double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSec();
       double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSec();
-      ROS_INFO("GOT MEASUREMENT");
       estimator.predict(zImu,dtImu);
       // operating = true;
       // while(editing){
       //   waitRate.sleep();
       // }
-      ROS_INFO("Predicted");
       estimator.correct(zMarkers,dtMarkers);
-      ROS_INFO("CORRECTED");
       // operating = false;
     }
     tsImuOld = ros::Time().fromNSec(tsImu.toNSec());
