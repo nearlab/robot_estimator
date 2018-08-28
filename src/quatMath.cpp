@@ -2,7 +2,7 @@
 
 Eigen::Matrix3d quat2rot(const Eigen::VectorXd& q){
   Eigen::Matrix3d T = (pow(q(3),2)*Eigen::MatrixXd::Identity(3,3)-q.head(3).transpose()*q.head(3))*Eigen::MatrixXd::Identity(3,3)
-                      *2*q.head(3)*q.head(3).transpose()-2*q(3)*crossProductEquivalent(q.head(3));
+                      +2*q.head(3)*q.head(3).transpose()-2*q(3)*crossProductEquivalent(q.head(3));
   return T;
 }
 Eigen::VectorXd quatRot(const Eigen::VectorXd& q, const Eigen::VectorXd& dq){
