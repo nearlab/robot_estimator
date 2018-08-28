@@ -74,7 +74,7 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
   ROS_INFO_STREAM("y ya");
   this->state.segment(0,3) += dx.segment(0,3);
   Eigen::VectorXd dq(4);
-  dq.head(3) = dx.segment(3,4);
+  dq.head(3) = dx.segment(3,3);
   dq.tail(1) << 1;//sqrt(1-pow((dt*dx.segment(3,3)/2).norm(),2));
   ROS_INFO_STREAM("stilllll");
   this->state.segment(3,4) = quatRot(this->state.segment(3,4),dq);
@@ -170,7 +170,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
              2*qx , 0    , 2*qz ,
              -2*qw, 2*qz , -4*qy;
 
-    dzdqz << -4*qz, 2*qw , -2*qx,
+    dzdqz << -4*qz, -2*qw , 2*qx,
              2*qw , -4*qz, 2*qy ,
              2*qx , 2*qy , 0    ;
 
