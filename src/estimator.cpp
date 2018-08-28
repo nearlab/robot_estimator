@@ -59,9 +59,9 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
 void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers){
   ROS_INFO_STREAM("predicting");
   Eigen::MatrixXd HMarkers = parseMeasMarkers(zMarkers);
-  if(HMarkers.isApprox(Eigen::MatrixXd())){
-    return;
-  }
+  // if(HMarkers.isApprox(Eigen::MatrixXd())){
+  //   return;
+  // }
   ROS_INFO_STREAM("predicting still");
   Eigen::MatrixXd H = HMarkers;//Could potentially add in more measurements
   Eigen::MatrixXd R = this->params.RMarkers;
@@ -223,7 +223,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     x = x + dx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
-    ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count<<"\tdx.norm():"<<dx.norm());
+    ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count<<"\tdx(0):"<<dx(0)<<"\tdx(1):"<<dx(1)<<"\tdx(2):"<<dx(2)<<"\tdx(3):"<<dx(3)<<"\tdx(4):"<<dx(4)<<"\tdx(5):"<<dx(5)<<"\tdx(6):"<<dx(6));
   }
   
   this->state.head(7) = x;
