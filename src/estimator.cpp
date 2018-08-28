@@ -214,7 +214,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     x = x + dx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
-    ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count<<"\tdx(0):"<<dx(0)<<"\tdx(1):"<<dx(1)<<"\tdx(2):"<<dx(2)<<"\tdx(3):"<<dx(3)<<"\tdx(4):"<<dx(4)<<"\tdx(5):"<<dx(5)<<"\tdx(6):"<<dx(6));
+    ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count<<"\tx(3)"<<x(3)<<"\tx(4):"<<x(4)<<"\tx(5):"<<x(5)<<"\tx(6):"<<x(6)<<"\tdx(3):"<<dx(3)<<"\tdx(4):"<<dx(4)<<"\tdx(5):"<<dx(5)<<"\tdx(6):"<<dx(6));
   }
   
   this->state.head(7) = x;
