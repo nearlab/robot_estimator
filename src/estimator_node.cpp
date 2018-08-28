@@ -6,7 +6,7 @@
 
 #include "robot_controller/State.h"
 #include "robot_controller/MarkersParsed.h"
-#include "xsens_bridge/Imu.h"
+#include "robot_controller/Imu.h"
 #include "estimator.h"
 
 #include <string>
@@ -32,7 +32,7 @@ void markersCallback(const robot_controller::MarkersParsed msg){
   }
 }   
 
-void imuCallback(const xsens_bridge::Imu msg){
+void imuCallback(const robot_controller::Imu msg){
     zImu << msg.acc[0],msg.acc[1],msg.acc[2],msg.gyr[0],msg.gyr[1],msg.gyr[2];
     tsImu = ros::Time(msg.tStamp);
 }

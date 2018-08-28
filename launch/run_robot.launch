@@ -1,6 +1,6 @@
 <launch>
   <!-- Name of robot -->
-  <rosparam param="RobotName"> "GAMR1" </rosparam>
+  <rosparam param="RobotName"> "Orbot" </rosparam>
   <!-- Orbital Period, seconds -->
   <rosparam param="Torb"> 5236 </rosparam>
   <!-- Mass of spacecraft -->

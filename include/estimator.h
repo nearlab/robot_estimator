@@ -5,9 +5,12 @@
 #include <Eigen/SVD>
 #include <boost/array.hpp>
 #include <math.h>
+#include <cmath>
 #include "params.h"
 #include "simulator.h"
 #include "quatMath.h"
+//#include <ros/console.h>
+#include <ros/ros.h>
 
 class Estimator{
 public:

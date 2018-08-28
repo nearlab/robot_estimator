@@ -11,7 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
-find_package(Eigen3 REQUIRED NO_MODULE)
+#find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+set(EIGEN3_INCLUDE_DIRS /usr/share/eigen)
 
 add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES
   Control.msg
@@ -42,7 +43,9 @@ catkin_package(CATKIN_DEPENDS
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
+  ${EIGEN3_INCLUDE_DIRS}
 )
+
 
 add_executable(dynamics_node
                src/dynamics_node.cpp)
@@ -59,12 +62,14 @@ add_executable(estimator_node
 add_executable(cans_controller_node
                src/cans_controller_node.cpp)
 add_executable(imu_sim_node
+               src/quatMath.cpp
+               src/params.cpp
                src/imu_sim_node.cpp)
 
-set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node cans_controller_node)
+set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node cans_controller_node imu_sim_node)
 foreach(EXEC_FILE ${EXEC_LIST})
-  target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES} Eigen3::Eigen)
-  add_dependencies(${EXEC_FILE} ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+  target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES})
+  add_dependencies(${EXEC_FILE} ${catkin_iEXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
   install(TARGETS ${EXEC_FILE}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 endforeach(EXEC_FILE ${EXEC_LIST})

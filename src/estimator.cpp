@@ -87,7 +87,7 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   boost::array<int,5> occluded;
   int nOccl = 0;
   for(int i=0;i<n*3;i++){
-    if(isnan(zMarkersRaw(i*3))){
+    if(std::isnan(zMarkersRaw(i*3))){
       int ind = ceil(i/3);
       if(occluded[ind]==0){
         nOccl = nOccl+1;

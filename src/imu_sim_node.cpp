@@ -4,7 +4,8 @@
 #include <Eigen/Dense> 
 #include <Eigen/Cholesky>
 #include <geometry_msgs/TransformStamped.h>
-#include "robot_controller/Markers.h"
+#include "robot_controller/Imu.h"
+#include "quatMath.h"
 #include "params.h"
 #include <boost/array.hpp>
 #include <math.h> 
@@ -14,17 +15,17 @@
 #include <random>
 
 ros::Publisher pub;
-ros::Subscriber subMarkers;
+ros::Subscriber subVicon;
 Eigen::Vector3d ba,bg,va,vg,acc,gyr;
 Eigen::MatrixXd stateHist;
 int histCount;
 std::string robotName;
-ros::Time tsMarkers;
+ros::Time tsVicon;
 Params params;
 std::normal_distribution<double> randDist;
 std::default_random_engine randGen;
 
-MatrixXd qa0Decomp, qg0Deocmp, qaDecomp,qgDecomp,qa2Decomp;
+Eigen::MatrixXd qa0Decomp, qg0Decomp, qaDecomp,qgDecomp,qa2Decomp;
 
 Eigen::VectorXd randn(int n){
   Eigen::VectorXd randVec(n);
@@ -41,8 +42,6 @@ void setupChol(){
   qa2Decomp = params.Qa2.llt().matrixL();
   qg0Decomp = params.Qg0.llt().matrixL();
   qgDecomp = params.Qg.llt().matrixL();
-  randn = std::normal_distribution(0.0,1.0);
-  Eigen::Vector3d randVec(randn(randGen),randn(randGen),randn(randGen));
   ba = qa0Decomp * randn(3);
   bg = qg0Decomp * randn(3);
 }
@@ -97,9 +96,10 @@ int main(int argc, char** argv){
   tsVicon = ros::Time(0);
   histCount = 0;
   stateHist = Eigen::MatrixXd::Zero(8,3);
+  randDist = std::normal_distribution<double>(0.0,1.0);
   setupChol();
 
-  subMarkers=nh.subscribe(std::string("vicon/")+robotName+std::string("/")+robotName,1000,markersCallback);
+  subVicon=nh.subscribe(std::string("vicon/")+robotName+std::string("/")+robotName,1000,viconCallback);
   pub=nh.advertise<robot_controller::Imu>(robotName+std::string("/imu"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("IMU Sim Node Initialized");
@@ -109,15 +109,17 @@ int main(int argc, char** argv){
       loop_rate.sleep();		
       continue;
     }
-    robot_controller::Markers toPub;
-    toPub.accTruth = acc;
-    toPub.gyrTruth = gyr;
-    toPub.acc = acc + ba + va;
-    toPub.gyr = gyr + bg + vg;
+    robot_controller::Imu toPub;
+    for(int i=0;i<3;i++){
+      toPub.accTruth[i] = acc(i);
+      toPub.gyrTruth[i] = gyr(i);
+      toPub.acc[i] = acc(i) + ba(i) + va(i);
+      toPub.gyr[i] = gyr(i) + bg(i) + vg(i);
+    }
     toPub.tStamp = tsVicon.toSec();
     pub.publish(toPub);
     
     ros::spinOnce();
     loop_rate.sleep();		
-	}
+  }
 }

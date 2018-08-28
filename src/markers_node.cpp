@@ -59,7 +59,7 @@ int main(int argc, char** argv){
       loop_rate.sleep();		
       continue;
     }
-    robot_controller::Markers toPub;
+    robot_controller::MarkersParsed toPub;
     toPub.markers = zMarkers;
     toPub.tStamp = tsMarkers.toSec();
     pub.publish(toPub);
