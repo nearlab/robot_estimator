@@ -133,8 +133,9 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
             2*qx , 2*qy , 0    ;
   Eigen::MatrixXd H(3*(n-nOccl),12);
   Eigen::MatrixXd rMarker = this->params.markerLocs;
-  ROS_INFO_STREAM("yep processing measurement");
+  
   for(int i=0;i<n-nOccl;i++){
+    ROS_INFO_STREAM("yep processing measurement"<<i<<"\t(n-nOccl)"<<(n-nOccl));
     H.block(i*3,0,3,3) = Eigen::MatrixXd::Identity(3,3);
     H.block(i*3,3,3,1) = dzdqx*(rMarker.row(i).transpose());
     H.block(i*3,4,3,1) = dzdqy*(rMarker.row(i).transpose());
