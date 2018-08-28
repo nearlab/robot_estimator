@@ -155,7 +155,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
   Eigen::VectorXd dzMarkers = (zMarkers - markerSimulator(x,this->params));
   double cost = dzMarkers.norm();
   dx(6) = 1;
-  while(dx.head(6).norm()>.00001 && count<1000){
+  while(dx.norm()>.00001 && count<1000){
     double qx = x(3);
     double qy = x(4);
     double qz = x(5);
@@ -222,9 +222,9 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     x = x + dx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
-
+    ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count<<"\tdx.norm():"<<dx.norm());
   }
-  ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count);
+  
   this->state.head(7) = x;
   isInitialized = true;
 }
