@@ -57,6 +57,7 @@ void viconCallback(const geometry_msgs::TransformStamped msg){
     stateHist(5,histCount) = msg.transform.rotation.z;
     stateHist(6,histCount) = msg.transform.rotation.w;
     stateHist(7,histCount) = msg.header.stamp.toSec();
+    histCount++;
   }
   else{
     tsVicon = msg.header.stamp;
