@@ -85,12 +85,12 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
 }
 Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   //Returns the Jacobian for the measurement equation for the Vicon Markers
-  int n = zMarkersRaw.size();
+  int n = zMarkersRaw.size()/3;
   boost::array<int,5> occluded;
   int nOccl = 0;
-  ROS_INFO_STREAM("processing measurement");
+  ROS_INFO_STREAM("processing measurement:"<<n<<","<<zMarkersRaw.size());
   for(int i=0;i<n*3;i++){
-    if(std::isnan(zMarkersRaw(i*3))){
+    if(std::isnan(zMarkersRaw(i))){
       int ind = ceil(i/3);
       if(occluded[ind]==0){
         nOccl++;
