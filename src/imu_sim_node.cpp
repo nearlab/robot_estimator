@@ -4,7 +4,7 @@
 #include <Eigen/Dense> 
 #include <Eigen/Cholesky>
 #include <geometry_msgs/TransformStamped.h>
-#include "robot_controller/Imu.h"
+#include "robot_estimator/Imu.h"
 #include "quatMath.h"
 #include "params.h"
 #include <boost/array.hpp>
@@ -71,18 +71,21 @@ void viconCallback(const geometry_msgs::TransformStamped msg){
     stateHist(5,2) = msg.transform.rotation.z;
     stateHist(6,2) = msg.transform.rotation.w;
     stateHist(7,2) = msg.header.stamp.toSec();
-
+   
+    double t1 = stateHist(7,1) - stateHist(7,0);
+    double t2 = stateHist(7,2) - stateHist(7,0);
+   
     Eigen::Vector4d q1 = stateHist.block(3,1,4,1);
     Eigen::Vector4d q2 = stateHist.block(3,2,4,1);
     Eigen::Vector4d dq = quatRot(q2,inverse(q1));
-    gyr = dq.segment(0,3);
+    gyr = dq.segment(0,3)/(t2-t1)*2;
 
-    double t1 = stateHist(7,1) - stateHist(7,0);
-    double t2 = stateHist(7,2) - stateHist(7,0);
+   
     for(int i=0;i<3;i++){
       acc(i) = ((stateHist(i,0)-stateHist(i,1))/t1 + (stateHist(i,2)-stateHist(i,0))/t2)/(t2-t1);
     }
-
+    ROS_INFO_STREAM(stateHist.block(0,0,6,3)<<"\ndt1:"<<t1<<"\ndt2:"<<t2);
+    ROS_INFO_STREAM(acc);
     va = qaDecomp * randn(3);
     vg = qaDecomp * randn(3);
     Eigen::Vector3d va2 = qa2Decomp * randn(3);
@@ -101,7 +104,7 @@ int main(int argc, char** argv){
   setupChol();
 
   subVicon=nh.subscribe(std::string("vicon/")+robotName+std::string("/")+robotName,1000,viconCallback);
-  pub=nh.advertise<robot_controller::Imu>(robotName+std::string("/imu"),1000);
+  pub=nh.advertise<robot_estimator::Imu>(robotName+std::string("/imu"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("IMU Sim Node Initialized");
   while(ros::ok()){
@@ -110,7 +113,7 @@ int main(int argc, char** argv){
       loop_rate.sleep();		
       continue;
     }
-    robot_controller::Imu toPub;
+    robot_estimator::Imu toPub;
     for(int i=0;i<3;i++){
       toPub.accTruth[i] = acc(i);
       toPub.gyrTruth[i] = gyr(i);

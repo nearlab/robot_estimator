@@ -49,4 +49,9 @@
     output="screen">
   </node>
   
+  <node pkg="orbot_client"
+     type="orbot_client"
+     name="orbot_client"
+     output="screen">
+  </node>  
 </launch>
