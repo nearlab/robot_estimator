@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <Eigen/Dense>
+#include <ros/ros.h>
 
 Eigen::Matrix3d quat2rot(const Eigen::VectorXd& q);
 Eigen::VectorXd quatRot(const Eigen::VectorXd& q, const Eigen::VectorXd& dq);

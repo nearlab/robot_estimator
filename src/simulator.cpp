@@ -4,7 +4,6 @@ Eigen::VectorXd markerSimulator(const Eigen::VectorXd& state, const Params& para
   int nOccl = 0;
   int n = params.markerLocs.rows();
   Eigen::Matrix3d T = quat2rot(state.segment(3,4));
-  ROS_INFO_STREAM(T);
   Eigen::VectorXd zRaw = Eigen::VectorXd::Zero(3*n);
   int ind = 0;
   for(int i=0;i<n;i++){
