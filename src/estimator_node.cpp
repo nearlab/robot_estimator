@@ -34,7 +34,7 @@ void markersCallback(const robot_controller::MarkersParsed msg){
 }   
 
 void imuCallback(const robot_controller::Imu msg){
-    zImu << 0,0,0,0,0,0;//msg.accTruth[0],msg.accTruth[1],msg.accTruth[2],msg.gyrTruth[0],msg.gyrTruth[1],msg.gyrTruth[2];
+    zImu << msg.accTruth[0],msg.accTruth[1],msg.accTruth[2],msg.gyrTruth[0],msg.gyrTruth[1],msg.gyrTruth[2];
     tsImu = ros::Time(msg.tStamp);
 }
 
@@ -68,6 +68,7 @@ int main(int argc, char** argv){
       first=false;
     }else{
       double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSec();
+      ROS_INFO_STREAM("zImu:"<<zImu<<"\ndtImu:"<<dtImu);
       double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSec();
       estimator.predict(zImu,dtImu);
       // operating = true;
