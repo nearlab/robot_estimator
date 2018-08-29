@@ -32,7 +32,7 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   qk.head(2) << 0,0;
   qk = qk/qk.norm();
   bak = ba;
-    state.segment(0,3) = rk;
+  state.segment(0,3) = rk;
   state.segment(7,3) = vk;
   state.segment(3,4) = qk;
   state.segment(10,3) = bak;
@@ -45,7 +45,7 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   Eigen::Matrix3d z3 = Eigen::MatrixXd::Zero(3,3);
   Eigen::Matrix3d i3 = Eigen::MatrixXd::Identity(3,3);
   F << i3, pow(dt,3)/6*Tt*wxax-pow(dt,2)/2*Tt*akx, dt*i3, pow(dt,3)/6*Tt*wkx-pow(dt,2)/2*Tt, 
-       z3, quat2rot(dq)                          , z3   , z3,
+       z3, quat2rot(dq/dq.norm())                , z3   , z3,
        z3, pow(dt,2)/2*Tt*wxax-dt*Tt*akx         , i3   , pow(dt,2)*Tt*wkx-dt*Tt,
        z3, z3                                    , z3   , i3;
   M << pow(dt,3)*Tt*wkx-pow(dt,2)*Tt,-pow(dt,3)/6*Tt*akx,z3,
@@ -120,7 +120,7 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
             2*qx , 0    , 2*qz ,
             -2*qw, 2*qz , -4*qy;
 
-  dzdqx <<  -4*qz, 2*qw , -2*qx,
+  dzdqx <<  -4*qz, -2*qw , 2*qx,
             2*qw , -4*qz, 2*qy ,
             2*qx , 2*qy , 0    ;
   Eigen::MatrixXd H(3*(n-nOccl),12);
