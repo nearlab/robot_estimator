@@ -1,8 +1,8 @@
 <package>
-  <name>robot_controller</name>
+  <name>robot_estimator</name>
   <version>0.0.1</version>
   <description>
-    For CANS Robot
+    For a robot, one would suppose
   </description>
   <license>MIT</license>
   <maintainer email="jtb2013@gmail.com">James Bell</maintainer>
