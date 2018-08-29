@@ -4,10 +4,10 @@
 #include <geometry_msgs/Point.h>
 #include <Eigen/Dense> 
 
-#include "robot_controller/State.h"
-#include "robot_controller/MarkersParsed.h"
-#include "robot_controller/Imu.h"
-#include "robot_controller/StateCov.h"
+#include "robot_estimator/State.h"
+#include "robot_estimator/MarkersParsed.h"
+#include "robot_estimator/Imu.h"
+#include "robot_estimator/StateCov.h"
 #include "estimator.h"
 
 #include <string>
@@ -26,7 +26,7 @@ ros::Subscriber subMarkers, subImu;
 
 ros::Time tsMarkers, tsImu;
 
-void markersCallback(const robot_controller::MarkersParsed msg){
+void markersCallback(const robot_estimator::MarkersParsed msg){
   tsMarkers = ros::Time(msg.tStamp);
   for(int i=0;i<15;i++){
     zMarkers(i) = msg.markers[i];
@@ -48,8 +48,8 @@ int main(int argc, char** argv){
 
   subImu = nh.subscribe(robotName+std::string("/imu"),1000,imuCallback);
   subMarkers = nh.subscribe(robotName+std::string("/markers"),1000,markersCallback);
-  pubState = nh.advertise<robot_controller::State>(robotName+std::string("/state"),1000);
-  pubStateCov = nh.advertise<robot_controller::StateCov>(robotName+std::string("/state_cov"),1000);
+  pubState = nh.advertise<robot_estimator::State>(robotName+std::string("/state"),1000);
+  pubStateCov = nh.advertise<robot_estimator::StateCov>(robotName+std::string("/state_cov"),1000);
   ros::Rate loop_rate(100);
   ros::Time tsImuOld,tsMarkersOld;
   bool first = true;
@@ -81,7 +81,7 @@ int main(int argc, char** argv){
     tsImuOld = ros::Time().fromNSec(tsImu.toNSec());
     tsMarkersOld = ros::Time().fromNSec(tsMarkers.toNSec());
     
-    robot_controller::State stateMsg;
+    robot_estimator::State stateMsg;
     state = estimator.getState();
     for(int i=0;i<3;i++){//There are better ways
       stateMsg.r[i] = state(i);
@@ -94,7 +94,7 @@ int main(int argc, char** argv){
     stateMsg.tStamp = tsNow.toSec();
     pubState.publish(stateMsg);
 
-    robot_controller::StateCov stateCovMsg;
+    robot_estimator::StateCov stateCovMsg;
     P = estimator.getCovariance();
     for(int i=0;i<P.rows();i++){
       stateCovMsg.P[i] = P(i,i);

@@ -2,8 +2,8 @@
 #include <ros/ros.h>
 #include <Eigen/Dense> 
 #include <geometry_msgs/Vector3.h>
-#include "robot_controller/State.h"
-#include "robot_controller/Control.h"
+#include "robot_estimator/State.h"
+#include "robot_estimator/Control.h"
 #include <math.h> 
 #include <string>
 #include <cstring>
@@ -15,7 +15,7 @@ ros::Time tsState;
 
 ros::Publisher pub;
 ros::Subscriber subState;
-void stateCallback(const robot_controller::State msg){
+void stateCallback(const robot_estimator::State msg){
   r << msg.r[0],msg.r[1],msg.r[2];
   q << msg.q[0],msg.q[1],msg.q[2],msg.q[3];
   v << msg.v[0],msg.v[1],msg.v[2];
@@ -37,7 +37,7 @@ int main(int argc, char** argv){
 
   
   subState=nh.subscribe(robotName+std::string("/state"),1000,stateCallback);
-  pub=nh.advertise<robot_controller::Control>(robotName+std::string("/control"),1000);
+  pub=nh.advertise<robot_estimator::Control>(robotName+std::string("/control"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("SC Controller Node Initialized");
   while(ros::ok()){
@@ -62,7 +62,7 @@ int main(int argc, char** argv){
 
     f = K * rvErr;
 
-    robot_controller::Control toPub;
+    robot_estimator::Control toPub;
     for(int i=0;i<3;i++){
       toPub.f[i] = f(i);
     }

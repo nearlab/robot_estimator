@@ -2,9 +2,9 @@
          I'm sure this will just be something to do with launch files and smart coding.*/
 #include <ros/ros.h>
 #include <Eigen/Dense> 
-#include "robot_controller/Markers.h"
-#include "robot_controller/Marker.h"
-#include "robot_controller/MarkersParsed.h"
+#include "robot_estimator/Markers.h"
+#include "robot_estimator/Marker.h"
+#include "robot_estimator/MarkersParsed.h"
 #include <boost/array.hpp>
 #include <math.h> 
 #include <string>
@@ -18,9 +18,9 @@ std::string robotName;
 ros::Time tsMarkers;
 
 
-void markersCallback(const robot_controller::Markers msg){
+void markersCallback(const robot_estimator::Markers msg){
   tsMarkers = msg.header.stamp;
-  std::vector<robot_controller::Marker> markers = msg.markers;
+  std::vector<robot_estimator::Marker> markers = msg.markers;
   int s = markers.size();
   int zIter = 0;
   // while(operating){
@@ -50,7 +50,7 @@ int main(int argc, char** argv){
   tsMarkers = ros::Time(0);
 
   subMarkers=nh.subscribe("vicon/markers",1000,markersCallback);
-  pub=nh.advertise<robot_controller::MarkersParsed>(robotName+std::string("/markers"),1000);
+  pub=nh.advertise<robot_estimator::MarkersParsed>(robotName+std::string("/markers"),1000);
   ros::Rate loop_rate(100);
   ROS_INFO("Markers Node Initialized");
   while(ros::ok()){
@@ -59,7 +59,7 @@ int main(int argc, char** argv){
       loop_rate.sleep();		
       continue;
     }
-    robot_controller::MarkersParsed toPub;
+    robot_estimator::MarkersParsed toPub;
     toPub.markers = zMarkers;
     toPub.tStamp = tsMarkers.toSec();
     pub.publish(toPub);
