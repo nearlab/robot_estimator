@@ -208,19 +208,14 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     }
     dzMarkers = (zMarkers - markerSimulator(x,this->params));
     cost = dzMarkers.norm();
-    ROS_INFO_STREAM(x);
-    ROS_INFO_STREAM(zMarkers);
-    ROS_INFO_STREAM(quat2rot(x.tail(4)));
 
     Eigen::VectorXd dJdx = (Ht*H+lambda*(Ht*H).diagonal().asDiagonal().toDenseMatrix()).inverse()*Ht*dzMarkers;
     dx = dJdx;
     x = x + dx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
-    ROS_INFO_STREAM(dx);
-    ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count);
   }
-  
+  ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count);
   this->state.head(7) = x;
   isInitialized = true;
 }

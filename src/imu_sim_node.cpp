@@ -80,7 +80,7 @@ void viconCallback(const geometry_msgs::TransformStamped msg){
     double t1 = stateHist(7,1) - stateHist(7,0);
     double t2 = stateHist(7,2) - stateHist(7,0);
     for(int i=0;i<3;i++){
-      acc(i) = (stateHist(i,2)-(stateHist(i,1)-stateHist(i,0))*t2/t1-stateHist(i,0))/t2/t2;
+      acc(i) = ((stateHist(i,0)-stateHist(i,1))/t1 + (stateHist(i,2)-stateHist(i,0))/t2)/(t2-t1);
     }
 
     va = qaDecomp * randn(3);
