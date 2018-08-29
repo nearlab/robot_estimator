@@ -33,7 +33,7 @@ void markersCallback(const robot_estimator::MarkersParsed msg){
   }
 }   
 
-void imuCallback(const robot_controller::Imu msg){
+void imuCallback(const robot_estimator::Imu msg){
     zImu << msg.accTruth[0],msg.accTruth[1],msg.accTruth[2],msg.gyrTruth[0],msg.gyrTruth[1],msg.gyrTruth[2];
     tsImu = ros::Time(msg.tStamp);
 }
@@ -46,8 +46,8 @@ int main(int argc, char** argv){
   tsImu = ros::Time(0);
   tsMarkers = ros::Time(0);
 
-  subImu = nh.subscribe(robotName+std::string("/imu"),1000,imuCallback);
-  subMarkers = nh.subscribe(robotName+std::string("/markers"),1000,markersCallback);
+  subImu = nh.subscribe(robotName+std::string("/imu"),2,imuCallback);
+  subMarkers = nh.subscribe(robotName+std::string("/markers"),2,markersCallback);
   pubState = nh.advertise<robot_estimator::State>(robotName+std::string("/state"),1000);
   pubStateCov = nh.advertise<robot_estimator::StateCov>(robotName+std::string("/state_cov"),1000);
   ros::Rate loop_rate(100);
@@ -68,15 +68,14 @@ int main(int argc, char** argv){
       first=false;
     }else{
       double dtImu = ((ros::Duration)(tsImu - tsImuOld)).toSec();
-      ROS_INFO_STREAM("zImu:"<<zImu<<"\ndtImu:"<<dtImu);
+      ROS_INFO_STREAM("zImu:"<<zImu<<"\ntsImu:"<<tsImu.toSec()<<"\ntsImuOld"<<tsImuOld.toSec()<<"\ndtImu:"<<dtImu);
       double dtMarkers = ((ros::Duration)(tsMarkers - tsMarkersOld)).toSec();
       estimator.predict(zImu,dtImu);
-      // operating = true;
-      // while(editing){
-      //   waitRate.sleep();
-      // }
-      estimator.correct(zMarkers,dtMarkers);
-      // operating = false;
+      ROS_INFO_STREAM("State:"<<estimator.getState());
+      if(dtMarkers > 0){
+        estimator.correct(zMarkers,dtMarkers);
+        ROS_INFO_STREAM("State:"<<estimator.getState());
+      }
     }
     tsImuOld = ros::Time().fromNSec(tsImu.toNSec());
     tsMarkersOld = ros::Time().fromNSec(tsMarkers.toNSec());

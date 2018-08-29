@@ -84,8 +84,8 @@ void viconCallback(const geometry_msgs::TransformStamped msg){
     for(int i=0;i<3;i++){
       acc(i) = ((stateHist(i,0)-stateHist(i,1))/t1 + (stateHist(i,2)-stateHist(i,0))/t2)/(t2-t1);
     }
-    ROS_INFO_STREAM(stateHist.block(0,0,6,3)<<"\ndt1:"<<t1<<"\ndt2:"<<t2);
-    ROS_INFO_STREAM(acc);
+    //ROS_INFO_STREAM(stateHist.block(0,0,6,3)<<"\ndt1:"<<t1<<"\ndt2:"<<t2);
+    //ROS_INFO_STREAM(acc);
     va = qaDecomp * randn(3);
     vg = qaDecomp * randn(3);
     Eigen::Vector3d va2 = qa2Decomp * randn(3);
@@ -104,8 +104,8 @@ int main(int argc, char** argv){
   setupChol();
 
   subVicon=nh.subscribe(std::string("vicon/")+robotName+std::string("/")+robotName,1000,viconCallback);
-  pub=nh.advertise<robot_estimator::Imu>(robotName+std::string("/imu"),1000);
-  ros::Rate loop_rate(100);
+  pub=nh.advertise<robot_estimator::Imu>(robotName+std::string("/imu"),2);
+  ros::Rate loop_rate(200);
   ROS_INFO("IMU Sim Node Initialized");
   while(ros::ok()){
     if(tsVicon.toSec() == 0){
