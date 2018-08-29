@@ -9,10 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_msgs
   roscpp
-  xsens_bridge
 )
 
-find_package(Eigen3 REQUIRED NO_MODULE)
+#find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+set(EIGEN3_INCLUDE_DIRS /usr/share/eigen)
 
 add_message_files(DIRECTORY ${PROJECT_SOURCE_DIR}/msg FILES
   Control.msg
@@ -32,7 +32,6 @@ catkin_package(CATKIN_DEPENDS
   geometry_msgs
   roscpp
   message_runtime
-  xsens_bridge
 )
 
 #########
@@ -55,8 +54,6 @@ add_executable(estimator_node
                src/quatMath.cpp
                src/params.cpp
                src/estimator.cpp)
-add_executable(cans_controller_node
-               src/cans_controller_node.cpp)
 
 set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node cans_controller_node)
 foreach(EXEC_FILE ${EXEC_LIST})

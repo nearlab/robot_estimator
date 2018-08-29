@@ -1,6 +1,6 @@
 <launch>
   <!-- Name of robot -->
-  <rosparam param="RobotName"> "GAMR1" </rosparam>
+  <rosparam param="RobotName"> "Orbot" </rosparam>
   <!-- Orbital Period, seconds -->
   <rosparam param="Torb"> 5236 </rosparam>
   <!-- Mass of spacecraft -->
@@ -9,25 +9,25 @@
   <rosparam param="tau"> 20 </rosparam>
   <!-- Distance Scaling between orbit and lab frames -->
   <rosparam param="nu"> 2 </rosparam>
-  <node pkg="robot_controller"
+  <node pkg="robot_estimator"
     type="dynamics_node"
     name="dynamics_node"
     output="screen">
   </node>
   
-  <node pkg="robot_controller"
+  <node pkg="robot_estimator"
     type="estimator_node"
     name="estimator_node"
     output="screen">
   </node>
 
-  <node pkg="robot_controller"
+  <node pkg="robot_estimator"
     type="markers_node"
     name="markers_node"
     output="screen">
   </node>
 
-  <node pkg="robot_controller"
+  <node pkg="robot_estimator"
     type="sc_controller_node"
     name="sc_controller_node"
     output="screen">
@@ -41,19 +41,6 @@
   <!-- Radius of the robot, used in Moment of Inertia calcs -->
   <rosparam param="radius"> .365 </rosparam>
   <!-- Distance between wheels and CM -->
-  <rosparam param="wheelDist"> .127 </rosparam>
-  <node pkg="robot_controller"
-    type="cans_controller_node"
-    name="cans_controller_node"
-    output="screen">
-    
 
-  </node>
-
-  <node pkg="xsens_bridge"
-    type="xsens_bridge"
-    name="xsens_bridge"
-    output="screen">
-  </node>
   
 </launch>

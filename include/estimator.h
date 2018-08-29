@@ -8,6 +8,7 @@
 #include "params.h"
 #include "simulator.h"
 #include "quatMath.h"
+#include <ros/ros.h>
 
 class Estimator{
 public:

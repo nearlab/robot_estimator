@@ -30,27 +30,24 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
   vk = v + ak*dt - 1/2*Tt*akx*wk*pow(dt,2);
   qk = quatRot(q,dq);
   qk.head(2) << 0,0;
-  ROS_INFO_STREAM("qk.norm()"<<qk.norm());
   qk = qk/qk.norm();
   bak = ba;
-    state.segment(0,3) = rk;
+  state.segment(0,3) = rk;
   state.segment(7,3) = vk;
   state.segment(3,4) = qk;
   state.segment(10,3) = bak;
 
   //Update error covariance
   Eigen::Matrix3d wxax = crossProductEquivalent(wkx*ak);
-  ROS_INFO("AIGHT");
   Eigen::MatrixXd F,M;
   F = Eigen::MatrixXd(12,12);
   M = Eigen::MatrixXd(12,9);
   Eigen::Matrix3d z3 = Eigen::MatrixXd::Zero(3,3);
   Eigen::Matrix3d i3 = Eigen::MatrixXd::Identity(3,3);
   F << i3, pow(dt,3)/6*Tt*wxax-pow(dt,2)/2*Tt*akx, dt*i3, pow(dt,3)/6*Tt*wkx-pow(dt,2)/2*Tt, 
-       z3, quat2rot(dq)                          , z3   , z3,
+       z3, quat2rot(dq/dq.norm())                , z3   , z3,
        z3, pow(dt,2)/2*Tt*wxax-dt*Tt*akx         , i3   , pow(dt,2)*Tt*wkx-dt*Tt,
        z3, z3                                    , z3   , i3;
-  ROS_INFO("heh");
   M << pow(dt,3)*Tt*wkx-pow(dt,2)*Tt,-pow(dt,3)/6*Tt*akx,z3,
        z3                           ,-dt*i3             ,z3,
        pow(dt,2)/2*Tt*wkx-dt*Tt     ,-pow(dt,2)/2*Tt*akx,z3,
@@ -60,9 +57,9 @@ void Estimator::predict(const Eigen::VectorXd& zImu, const double& dtImu){
 }
 void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers){
   Eigen::MatrixXd HMarkers = parseMeasMarkers(zMarkers);
-  if(HMarkers.isApprox(Eigen::MatrixXd())){
-    return;
-  }
+  // if(HMarkers.isApprox(Eigen::MatrixXd())){
+  //   return;
+  // }
   Eigen::MatrixXd H = HMarkers;//Could potentially add in more measurements
   Eigen::MatrixXd R = this->params.RMarkers;
   Eigen::MatrixXd Y = H*this->P*H.transpose() + R;
@@ -73,7 +70,7 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
   Eigen::VectorXd dx = K*zHatError;
   this->state.segment(0,3) += dx.segment(0,3);
   Eigen::VectorXd dq(4);
-  dq.head(3) = dx.segment(3,4);
+  dq.head(3) = dx.segment(3,3);
   dq.tail(1) << 1;//sqrt(1-pow((dt*dx.segment(3,3)/2).norm(),2));
   this->state.segment(3,4) = quatRot(this->state.segment(3,4),dq);
   this->state.segment(3,4) /= this->state.segment(3,4).norm();
@@ -83,19 +80,19 @@ void Estimator::correct(const Eigen::VectorXd& zMarkers, const double& dtMarkers
 }
 Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
   //Returns the Jacobian for the measurement equation for the Vicon Markers
-  int n = zMarkersRaw.size();
+  int n = zMarkersRaw.size()/3;
   boost::array<int,5> occluded;
   int nOccl = 0;
   for(int i=0;i<n*3;i++){
-    if(isnan(zMarkersRaw(i*3))){
+    if(std::isnan(zMarkersRaw(i))){
       int ind = ceil(i/3);
       if(occluded[ind]==0){
-        nOccl = nOccl+1;
+        nOccl++;
         occluded[ind] = 1;
       }
     }
   }
-  if(3*(n-nOccl)==0){
+  if((n-nOccl)==0){
     return Eigen::MatrixXd();
   }
   Eigen::VectorXd zMarkers(3*(n-nOccl));
@@ -123,11 +120,12 @@ Eigen::MatrixXd Estimator::parseMeasMarkers(const Eigen::VectorXd& zMarkersRaw){
             2*qx , 0    , 2*qz ,
             -2*qw, 2*qz , -4*qy;
 
-  dzdqx <<  -4*qz, 2*qw , -2*qx,
+  dzdqx <<  -4*qz, -2*qw , 2*qx,
             2*qw , -4*qz, 2*qy ,
             2*qx , 2*qy , 0    ;
   Eigen::MatrixXd H(3*(n-nOccl),12);
   Eigen::MatrixXd rMarker = this->params.markerLocs;
+  
   for(int i=0;i<n-nOccl;i++){
     H.block(i*3,0,3,3) = Eigen::MatrixXd::Identity(3,3);
     H.block(i*3,3,3,1) = dzdqx*(rMarker.row(i).transpose());
@@ -149,7 +147,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
   Eigen::VectorXd dzMarkers = (zMarkers - markerSimulator(x,this->params));
   double cost = dzMarkers.norm();
   dx(6) = 1;
-  while(dx.head(6).norm()>.00001 && count<1000){
+  while(dx.norm()>.00001 && count<1000){
     double qx = x(3);
     double qy = x(4);
     double qz = x(5);
@@ -163,7 +161,7 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
              2*qx , 0    , 2*qz ,
              -2*qw, 2*qz , -4*qy;
 
-    dzdqz << -4*qz, 2*qw , -2*qx,
+    dzdqz << -4*qz, -2*qw , 2*qx,
              2*qw , -4*qz, 2*qy ,
              2*qx , 2*qy , 0    ;
 
@@ -216,9 +214,8 @@ void Estimator::estimateStateFromMarkers(const Eigen::VectorXd& zMarkers){
     x = x + dx;
     x.tail(4) = x.tail(4)/x.tail(4).norm();
     count++;
-    ROS_INFO_STREAM("cost:"<<cost<<"\tdx(1)"<<dx(1)<<"\tx(1)"<<x(1)<<"\tdzMarkers(1)"<<dzMarkers(1));
-
   }
+  ROS_INFO_STREAM("cost:"<<cost<<"\tcount:"<<count);
   this->state.head(7) = x;
   isInitialized = true;
 }
