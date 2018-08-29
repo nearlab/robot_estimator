@@ -3,7 +3,7 @@
 Eigen::Matrix3d quat2rot(const Eigen::VectorXd& q){
   Eigen::Matrix3d T = Eigen::MatrixXd::Identity(3,3)*pow(q(3),2);
   ROS_INFO_STREAM(T);
-  T -= q.head(3).transpose()*q.head(3))*Eigen::MatrixXd::Identity(3,3);
+  T -= (q.head(3).transpose()*q.head(3))*Eigen::MatrixXd::Identity(3,3);
   ROS_INFO_STREAM(T);
   T += 2*q.head(3)*q.head(3).transpose();
   ROS_INFO_STREAM(T);
