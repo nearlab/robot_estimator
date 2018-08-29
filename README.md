@@ -18,4 +18,9 @@ Figure it out with google
 >cd ~/catkin_ws/src  
 >git clone https://github.com/nearlab/vicon_bridge.git 
 
+## Running
+>source ~/catkin_ws/devel/setup.bash
+>roslaunch vicon_bridge vicon.launch
+>roslaunch robot_estimator estimator.launch
+
 Also includes messages!

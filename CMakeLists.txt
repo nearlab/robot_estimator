@@ -59,14 +59,12 @@ add_executable(estimator_node
                src/quatMath.cpp
                src/params.cpp
                src/estimator.cpp)
-add_executable(cans_controller_node
-               src/cans_controller_node.cpp)
 add_executable(imu_sim_node
                src/quatMath.cpp
                src/params.cpp
                src/imu_sim_node.cpp)
 
-set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node cans_controller_node imu_sim_node)
+set(EXEC_LIST dynamics_node sc_controller_node markers_node estimator_node imu_sim_node)
 foreach(EXEC_FILE ${EXEC_LIST})
   target_link_libraries(${EXEC_FILE} ${catkin_LIBRARIES})
   add_dependencies(${EXEC_FILE} ${catkin_iEXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
