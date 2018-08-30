@@ -19,6 +19,7 @@ ros::Subscriber subVicon;
 Eigen::Vector3d ba,bg,va,vg,acc,gyr;
 Eigen::MatrixXd stateHist;
 int histCount;
+int histLen;
 std::string robotName;
 ros::Time tsVicon;
 Params params;
@@ -48,7 +49,7 @@ void setupChol(){
 
 void viconCallback(const geometry_msgs::TransformStamped msg){
   
-  if(histCount < 3){
+  if(histCount < histLen){
     stateHist(0,histCount) = msg.transform.translation.x;
     stateHist(1,histCount) = msg.transform.translation.y;
     stateHist(2,histCount) = msg.transform.translation.z;
@@ -63,6 +64,9 @@ void viconCallback(const geometry_msgs::TransformStamped msg){
     tsVicon = msg.header.stamp;
     stateHist.col(0) = stateHist.col(1);
     stateHist.col(1) = stateHist.col(2);
+    for(int i=0;i<stateHist.cols()-1;i++){
+      stateHist.col(i) = stateHist.col(i+1); //Perhaps could just use a regular matrix and shift a pointer over lol.
+    }
     stateHist(0,2) = msg.transform.translation.x;
     stateHist(1,2) = msg.transform.translation.y;
     stateHist(2,2) = msg.transform.translation.z;
@@ -71,19 +75,6 @@ void viconCallback(const geometry_msgs::TransformStamped msg){
     stateHist(5,2) = msg.transform.rotation.z;
     stateHist(6,2) = msg.transform.rotation.w;
     stateHist(7,2) = msg.header.stamp.toSec();
-   
-    double t1 = stateHist(7,1) - stateHist(7,0);
-    double t2 = stateHist(7,2) - stateHist(7,0);
-   
-    Eigen::Vector4d q1 = stateHist.block(3,1,4,1);
-    Eigen::Vector4d q2 = stateHist.block(3,2,4,1);
-    Eigen::Vector4d dq = quatRot(q2,inverse(q1));
-    gyr = dq.segment(0,3)/(t2-t1)*2;
-
-   
-    for(int i=0;i<3;i++){
-      acc(i) = ((stateHist(i,0)-stateHist(i,1))/t1 + (stateHist(i,2)-stateHist(i,0))/t2)/(t2-t1);
-    }
     //ROS_INFO_STREAM(stateHist.block(0,0,6,3)<<"\ndt1:"<<t1<<"\ndt2:"<<t2);
     //ROS_INFO_STREAM(acc);
     va = qaDecomp * randn(3);
@@ -99,7 +90,8 @@ int main(int argc, char** argv){
   nh.getParam("RobotName", robotName);
   tsVicon = ros::Time(0);
   histCount = 0;
-  stateHist = Eigen::MatrixXd::Zero(8,3);
+  histLen = histLen;
+  stateHist = Eigen::MatrixXd::Zero(8,histLen);
   randDist = std::normal_distribution<double>(0.0,1.0);
   setupChol();
 
@@ -113,6 +105,26 @@ int main(int argc, char** argv){
       loop_rate.sleep();		
       continue;
     }
+
+    Eigen::MatrixXd T(histLen,3);
+    Eigen::VectorXd xVec(histLen), yVec(3);
+    for(int i=0;i<8;i++){
+      T(i,0) = 1/2*pow(stateHist(7,i),2);
+      T(i,1) = stateHist(7,i);
+      T(i,2) = 1;
+    }
+    for(int i=0;i<3;i++){
+      xVec << stateHist.row(i).transpose();
+      yVec << (T.transpose()*T).inverse()*T.transpose()*xVec;//Optimal overdetermined solution
+      acc(i) = yVec(0);
+
+      Eigen::Vector4d q1 = stateHist.block(3,histLen-2,4,1);
+      Eigen::Vector4d q2 = stateHist.block(3,histLen-1,4,1);
+      Eigen::Vector4d dq = quatRot(q2,inverse(q1));
+      gyr = dq.segment(0,3);
+    }
+
+
     robot_estimator::Imu toPub;
     for(int i=0;i<3;i++){
       toPub.accTruth[i] = acc(i);

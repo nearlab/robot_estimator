@@ -7,7 +7,7 @@ Params::Params(){
   Q = Eigen::MatrixXd(9,9);
   markerLocs = Eigen::MatrixXd(5,3);
   double pi = 3.14159265358979;
-  imuDelt = .01;
+  imuDelt = .005;
   //Accelerometer white noise
   sa = pow((.08/sqrt(imuDelt)),2);
   this->Qa.setIdentity();
@@ -30,7 +30,7 @@ Params::Params(){
 
   //Accelerometer bias white noise
   sigmaa = 15*9.8/1000;
-  taua = 10;
+  taua = 100;
   this->Qa2.setIdentity();
   this->Qa2 *= pow(sigmaa,2)*(1-exp(-2*imuDelt/taua));
 
