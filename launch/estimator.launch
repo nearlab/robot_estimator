@@ -19,6 +19,7 @@
     type="estimator_node"
     name="estimator_node"
     output="screen">
+    launch-prefix="gdb -ex run --args"
   </node>
 
   <node pkg="robot_estimator"

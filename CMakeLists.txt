@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 project(robot_estimator)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11 -Wall)
+add_compile_options(-std=c++11 -g -Wall)
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
